@@ -16,8 +16,10 @@ import com.distillery.android.ui.databinding.FragmentTodoBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import androidx.lifecycle.lifecycleScope as viewCoroutineScope
 
 @ExperimentalCoroutinesApi
 class TodoListFragment : Fragment() {
@@ -43,6 +45,7 @@ class TodoListFragment : Fragment() {
         })
         todoViewModel.todoState
                 .onEach { state -> handleState(state) }
+                .launchIn(viewCoroutineScope)
     }
 
     private fun setUpListeners() {
