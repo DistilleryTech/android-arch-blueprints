@@ -27,8 +27,9 @@ project.ext {
                     supportCardView          : "androidx.cardview:cardview:1.0.0",
                     supportConstraintLayout  : "androidx.constraintlayout:constraintlayout:1.1.3",
                     supportLifecycleViewModel: "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0",
+                    supportLifecycleRuntime  : "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0",
                     supportRecyclerView      : "androidx.recyclerview:recyclerview:1.1.0",
-                    supportLifecyclelivedata  : "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0",
+                    supportLifecyclelivedata : "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0",
                     material                 : "com.google.android.material:material:1.1.0"
             ],
             test    : [

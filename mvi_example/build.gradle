@@ -40,6 +40,7 @@ dependencies {
     implementation libraries.android.supportAppCompat
     implementation libraries.android.supportConstraintLayout
     implementation libraries.android.supportLifecycleViewModel
+    implementation libraries.android.supportLifecycleRuntime
     implementation libraries.android.material
 
     // Unit tests
