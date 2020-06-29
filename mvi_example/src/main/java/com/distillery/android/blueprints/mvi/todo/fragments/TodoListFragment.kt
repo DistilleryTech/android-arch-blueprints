@@ -93,7 +93,7 @@ class TodoListFragment : Fragment() {
 
     private fun showSnackbarMessage(message: String?) {
         Snackbar.make(
-                binding.coordinatorLayout.rootView,
+                binding.todoContent,
                 message ?: getString(R.string.genericError),
                 Snackbar.LENGTH_SHORT)
                 .show()

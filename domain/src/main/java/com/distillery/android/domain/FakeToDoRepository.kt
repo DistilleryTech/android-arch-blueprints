@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong
 private val idGenerator = AtomicLong(0)
 
 @VisibleForTesting
-const val DELAY_OF_VALUES_GENERATOR = 5000L
+const val DELAY_OF_VALUES_GENERATOR = 500L
 
 @VisibleForTesting
 const val DELAY_FOR_TODO_OPERATION = 1500L
