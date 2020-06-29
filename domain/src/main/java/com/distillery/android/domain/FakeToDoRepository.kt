@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong
 private val idGenerator = AtomicLong(0)
 
 @VisibleForTesting
-const val DELAY_OF_VALUES_GENERATOR = 5000L
+const val DELAY_OF_VALUES_GENERATOR = 1000L
 
 @VisibleForTesting
 const val DELAY_FOR_TODO_OPERATION = 1500L
@@ -35,6 +35,7 @@ class FakeToDoRepository(private val scope: CoroutineScope) : ToDoRepository {
 
     // generate infinite amount of elements, but throw exception after 10th element
     init {
+        /*
         scope.launch {
             generateValues().collect { model ->
                 saveModel(model)
@@ -43,6 +44,7 @@ class FakeToDoRepository(private val scope: CoroutineScope) : ToDoRepository {
                 closeChannelIfLimitReached()
             }
         }
+        */
     }
 
     override fun fetchToDos(): Flow<List<ToDoModel>> {

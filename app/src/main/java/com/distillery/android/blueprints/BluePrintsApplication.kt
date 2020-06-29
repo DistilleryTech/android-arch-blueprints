@@ -5,6 +5,7 @@ import com.distillery.android.blueprints.mvi.mviModule
 import com.distillery.android.blueprints.mvvm.mvvmModule
 import com.distillery.android.domain.FakeToDoRepository
 import com.distillery.android.domain.ToDoRepository
+import di.mvpModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -29,7 +30,8 @@ class BluePrintsApplication : Application() {
             modules(listOf(
                     commonModules,
                     mvvmModule,
-                    mviModule
+                    mviModule,
+                    mvpModule
             ))
         }
     }

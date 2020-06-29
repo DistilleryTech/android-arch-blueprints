@@ -29,7 +29,8 @@ project.ext {
                     supportLifecycleViewModel: "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0",
                     supportRecyclerView      : "androidx.recyclerview:recyclerview:1.1.0",
                     supportLifecyclelivedata  : "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0",
-                    material                 : "com.google.android.material:material:1.1.0"
+                    material                 : "com.google.android.material:material:1.1.0",
+                    lifecycle                : "androidx.lifecycle:lifecycle-extensions:2.2.0",
             ],
             test    : [
                     junit           : "junit:junit:4.13",

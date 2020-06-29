@@ -11,13 +11,17 @@ android {
         targetSdkVersion versions.platform.targetSdk
         vectorDrawables.useSupportLibrary = true
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(path: ':domain')
-    implementation project(path: ':mvp')
+    implementation project(path: ':ui')
 
     // Platform libraries
     implementation libraries.platform.kotlinStdLib
@@ -26,6 +30,15 @@ dependencies {
     implementation libraries.android.core
     implementation libraries.android.supportAppCompat
     implementation libraries.android.supportConstraintLayout
+    implementation libraries.android.supportRecyclerView
+    implementation libraries.android.supportLifecycleViewModel
+    implementation libraries.android.material
+    implementation libraries.android.lifecycle
+
+    // Koin
+    implementation libraries.koin.core
+    implementation libraries.koin.coreExt
+    implementation libraries.koin.viewModel
 
     // Unit tests
     testImplementation libraries.test.junit
