@@ -6,12 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.distillery.android.blueprints.mvi.R
 import com.distillery.android.blueprints.mvi.todo.TodoIntent
 import com.distillery.android.blueprints.mvi.todo.TodoListModel
 import com.distillery.android.blueprints.mvi.todo.state.ConfirmationCode
 import com.distillery.android.blueprints.mvi.todo.state.TodoState
 import com.distillery.android.blueprints.mvi.todo.viewmodel.TodoViewModel
+import com.distillery.android.ui.adapter.ToDoListAdapter
 import com.distillery.android.ui.databinding.FragmentTodoBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,6 +28,8 @@ class TodoListFragment : Fragment() {
 
     private lateinit var binding: FragmentTodoBinding
     private val todoViewModel: TodoViewModel by viewModel()
+    private val todoListAdapter: ToDoListAdapter by lazy { getToDoListAdapter() }
+    private val completedListAdapter: ToDoListAdapter by lazy { getToDoListAdapter() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentTodoBinding.inflate(inflater, container, false)
@@ -37,6 +41,18 @@ class TodoListFragment : Fragment() {
         showProgress()
         setUpListeners()
         setUpObservers()
+        setUpTodoLists()
+        setUpCompleteTodoList()
+    }
+
+    private fun setUpCompleteTodoList() {
+        binding.completedTodoList.adapter = completedListAdapter
+        binding.completedTodoList.layoutManager = LinearLayoutManager(requireActivity())
+    }
+
+    private fun setUpTodoLists() {
+        binding.todoList.adapter = todoListAdapter
+        binding.todoList.layoutManager = LinearLayoutManager(requireActivity())
     }
 
     private fun setUpObservers() {
@@ -61,6 +77,8 @@ class TodoListFragment : Fragment() {
             }
             is TodoState.DataState -> {
                 hideProgress()
+                todoListAdapter.submitList(state.todoListFlow.todoList)
+                completedListAdapter.submitList(state.todoListFlow.completedTodoList)
             }
             is TodoState.ErrorState -> {
                 hideProgress()
@@ -104,6 +122,19 @@ class TodoListFragment : Fragment() {
                 .addToBackStack(null)
                 .replace(R.id.container, AddTodoItemFragment.newInstance())
                 .commit()
+    }
+
+    private fun getToDoListAdapter(): ToDoListAdapter {
+        return ToDoListAdapter(
+                onDeleteClickListener= {
+            todoViewModel.proccessIntents(flow {
+                emit(TodoIntent.DeleteTodo(it.uniqueId))
+            })},
+                onCompleteClickListener = {
+            todoViewModel.proccessIntents(flow {
+                emit(TodoIntent.CompleteTodo(it.uniqueId))
+            })
+        })
     }
 
     companion object {
