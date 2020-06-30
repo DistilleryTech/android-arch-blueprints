@@ -3,6 +3,7 @@ package com.distillery.android.domain
 import androidx.annotation.VisibleForTesting
 import com.distillery.android.domain.models.ToDoModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -21,13 +22,14 @@ import java.util.concurrent.atomic.AtomicLong
 private val idGenerator = AtomicLong(0)
 
 @VisibleForTesting
-const val DELAY_OF_VALUES_GENERATOR = 5000L
+const val DELAY_OF_VALUES_GENERATOR = 1500L
 
 @VisibleForTesting
 const val DELAY_FOR_TODO_OPERATION = 1500L
 
 private const val TODOS_ITEMS_TO_THROW = 10
 
+@ExperimentalCoroutinesApi
 class FakeToDoRepository(private val scope: CoroutineScope) : ToDoRepository {
 
     private val toDos = ConcurrentHashMap<Long, ToDoModel>()
@@ -77,7 +79,9 @@ class FakeToDoRepository(private val scope: CoroutineScope) : ToDoRepository {
 
     private fun publishChanges() {
         scope.launch {
-            todosChannel.send(toDos.values.toList())
+            if (!todosChannel.isClosedForSend) {
+                todosChannel.offer(toDos.values.toList())
+            }
         }
     }
 
@@ -86,9 +90,9 @@ class FakeToDoRepository(private val scope: CoroutineScope) : ToDoRepository {
         title: String = "ToDo №$id",
         description: String = "Awesome stuff to do!"
     ) = ToDoModel(
-        uniqueId = id,
-        title = title,
-        description = description
+            uniqueId = id,
+            title = title,
+            description = description
     )
 
     private fun saveModel(model: ToDoModel) {
@@ -120,7 +124,9 @@ class FakeToDoRepository(private val scope: CoroutineScope) : ToDoRepository {
         if (toDos.size < TODOS_ITEMS_TO_THROW) {
             return
         }
-        todosChannel.close(IllegalArgumentException("You died"))
+        scope.launch {
+            todosChannel.close(IllegalArgumentException("You died"))
+        }
     }
 
     override suspend fun deleteToDo(uniqueId: Long) {

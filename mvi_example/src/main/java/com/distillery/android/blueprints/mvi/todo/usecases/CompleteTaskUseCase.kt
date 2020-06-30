@@ -11,8 +11,8 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import java.net.ConnectException
 
-class CompleteTaskUseCase: KoinComponent {
-    val toDoRepository: ToDoRepository by inject()
+class CompleteTaskUseCase : KoinComponent {
+    private val toDoRepository: ToDoRepository by inject()
 
     suspend fun completeTasks(idUnique: Long): Flow<TodoState<TodoListModel>> {
         return flow {
@@ -26,6 +26,8 @@ class CompleteTaskUseCase: KoinComponent {
                 emit(TodoState.ErrorState(connectException))
             } catch (noSuchElement: NoSuchElementException) {
                 emit(TodoState.ErrorState(noSuchElement))
+            } catch (unsupportedException: UnsupportedOperationException) {
+                emit(TodoState.ErrorState(unsupportedException))
             }
         }
     }

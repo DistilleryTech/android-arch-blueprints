@@ -11,6 +11,16 @@ android {
         targetSdkVersion versions.platform.targetSdk
         vectorDrawables.useSupportLibrary = true
     }
+    buildFeatures {
+        viewBinding true
+    }
+    compileOptions {
+        sourceCompatibility versions.platform.java
+        targetCompatibility versions.platform.java
+    }
+    kotlinOptions {
+        jvmTarget = versions.platform.java
+    }
 }
 
 dependencies {
@@ -30,6 +40,8 @@ dependencies {
     implementation libraries.android.supportAppCompat
     implementation libraries.android.supportConstraintLayout
     implementation libraries.android.supportLifecycleViewModel
+    implementation libraries.android.supportLifecycleRuntime
+    implementation libraries.android.material
 
     // Unit tests
     testImplementation libraries.test.junit

@@ -1,21 +1,26 @@
 package com.distillery.android.blueprints
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import com.distillery.android.blueprints.databinding.ActivityMainBinding
+import com.distillery.android.blueprints.mvi.MviActivity
 import com.distillery.android.blueprints.mvvm.MvvmActivity
-import kotlinx.android.synthetic.main.activity_main.*
-import main.MvpActivity
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        mvvm.setOnClickListener {
-            startActivity(Intent(this, MvvmActivity::class.java))
+        binding.mvvm.setOnClickListener {
+            startActivity<MvvmActivity>()
+        }
+
+        binding.mvi.setOnClickListener {
+            startActivity<MviActivity>()
         }
 
         mvp.setOnClickListener{

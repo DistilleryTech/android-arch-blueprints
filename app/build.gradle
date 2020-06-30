@@ -32,6 +32,9 @@ android {
             crunchPngs false
         }
     }
+    buildFeatures {
+        viewBinding true
+    }
     compileOptions {
         sourceCompatibility versions.platform.java
         targetCompatibility versions.platform.java
