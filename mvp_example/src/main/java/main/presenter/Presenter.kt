@@ -4,7 +4,8 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.distillery.android.domain.FakeToDoRepository
+import com.distillery.android.domain.ToDoRepository
+import com.distillery.android.domain.models.ToDoModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,15 +19,26 @@ import main.view.TodoListAdapter
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import kotlin.coroutines.CoroutineContext
+import kotlin.properties.Delegates
 
 @Suppress("VariableNaming")
 class Presenter(
-    private val todoListAdapter: TodoListAdapter,
+    private val todoPendingListAdapter: TodoListAdapter,
+    private val todoDoneListAdapter: TodoListAdapter,
     private val lifecycle: Lifecycle
 ): LifecycleObserver, KoinComponent, CoroutineScope {
 
     private val TAG = "TodoPresenter"
-    private val repository: FakeToDoRepository by inject()
+    private val repository: ToDoRepository by inject()
+    var todoListAlltypes : List<ToDoModel> by Delegates.observable(listOf()){ property, oldValue, newValue ->
+
+        todoPendingListAdapter.submitList(
+            newValue.filter { item -> item.completedAt == null }
+        )
+        todoDoneListAdapter.submitList(
+            newValue.filter { item -> item.completedAt != null }
+        )
+    }
 
     private val job = Job()
     private val coroutineExceptionHandler = CoroutineExceptionHandler { context,  throwable ->
@@ -38,17 +50,16 @@ class Presenter(
     }
     override val coroutineContext: CoroutineContext = job + Dispatchers.IO + coroutineExceptionHandler
 
+    @InternalCoroutinesApi
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun start(){
         if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-            Log.d(TAG,"RESUME")
+            startFlow()
         }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun stop() {
-        // disconnect if connected
-        Log.d(TAG,"STOP")
         job.cancel()
     }
 
@@ -61,19 +72,38 @@ class Presenter(
     }
 
     @InternalCoroutinesApi
-    @Suppress("TooGenericExceptionCaught" ,"LongMethod")
+    fun onClickCheckBox(item: ToDoModel, newState: Boolean){
+        Log.d(TAG, "item[$item], newState[$newState]")
+        launch {
+            if(newState) {
+                repository.completeToDo(item.uniqueId)
+            } else {
+                repository.deleteToDo(item.uniqueId)
+            }
+            startFlow()
+        }
+    }
+
+    @InternalCoroutinesApi
+    @Suppress("TooGenericExceptionCaught", "LongMethod")
     fun startFlow(){
         launch {
             repository.fetchToDos()
                 .catch {
                     withContext(Dispatchers.Main) {
-                        Log.d(TAG, "ErrorCatch: $this@catch")
+                        when(this@catch){
+                            is IllegalArgumentException -> {
+                                Log.d(TAG, "Cheating death!")
+                            }
+                            else -> {
+                                Log.d(TAG, "Unknown exception")
+                            }
+                        }
                     }
                 }
                 .collect {
                     withContext(Dispatchers.Main) {
-                        Log.d(TAG, "listSize = ${it.size}")
-                        todoListAdapter.submitList(it)
+                        todoListAlltypes = it
                     }
                 }
         }

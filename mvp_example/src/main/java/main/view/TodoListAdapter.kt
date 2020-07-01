@@ -1,10 +1,12 @@
 package main.view
 
+import android.util.Log
 import com.distillery.android.domain.models.ToDoModel
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -15,9 +17,11 @@ import com.distillery.android.ui.databinding.ItemTodoBinding
 import kotlinx.android.extensions.LayoutContainer
 
 @Suppress("VariableNaming")
-class TodoListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class TodoListAdapter(
+    private val interaction: Interaction?
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    val DiffCallback = object : DiffUtil.ItemCallback<ToDoModel>() {
+    private val DiffCallback = object : DiffUtil.ItemCallback<ToDoModel>() {
         override fun areItemsTheSame(oldItem: ToDoModel, newItem: ToDoModel): Boolean =
             oldItem.uniqueId == newItem.uniqueId
 
@@ -54,15 +58,14 @@ class TodoListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val itemBinding = ItemTodoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val itemBinding = ItemTodoBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        )
         return TodoViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_todo,
-                parent,
-                false
-            ),
-            //interaction,
-            itemBinding
+            itemBinding,
+            interaction
         )
     }
 
@@ -78,34 +81,31 @@ class TodoListAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         return differ.currentList.size
     }
 
-    //In case there are changes on how to submit items to the list
+    // In case there are changes on how to submit items to the list
     fun submitList(list: List<ToDoModel>) {
         differ.submitList(list)
     }
 
     class TodoViewHolder
     constructor(
-        itemView: View,
-        //private val interaction: Interaction?,
-        private val itemTodoBinding: ItemTodoBinding
-    ) : RecyclerView.ViewHolder(itemView), LayoutContainer {
-
+        private val itemTodoBinding: ItemTodoBinding,
+        private val interaction: Interaction?
+    ) : RecyclerView.ViewHolder(itemTodoBinding.root), LayoutContainer {
         override val containerView: View?
             get() = itemView
 
         fun bind(item: ToDoModel) = with(itemView) {
-            /*
-            setOnClickListener {
-                interaction?.onItemSelected(adapterPosition, item)
-            }
-             */
             itemTodoBinding.descriptionTextView.text = item.description
+            itemTodoBinding.titleTextView.text = item.title
+            itemTodoBinding.completedCheckBox.isChecked =
+                item.completedAt != null
+            itemTodoBinding.completedCheckBox.setOnClickListener {
+                interaction?.onClickCheckBox(item, itemTodoBinding.completedCheckBox.isChecked)
+            }
         }
     }
 
-    /*
-    interface Interaction {
-        fun onItemSelected(position: Int, item: ToDoModel)
+    interface Interaction{
+        fun onClickCheckBox(item: ToDoModel, newState: Boolean)
     }
-     */
 }

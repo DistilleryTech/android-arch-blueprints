@@ -6,6 +6,7 @@ import com.distillery.android.blueprints.databinding.ActivityMainBinding
 import com.distillery.android.blueprints.mvi.MviActivity
 import com.distillery.android.blueprints.mvvm.MvvmActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import main.MvpActivity
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity() {
@@ -23,9 +24,8 @@ class MainActivity : AppCompatActivity() {
             startActivity<MviActivity>()
         }
 
-        mvp.setOnClickListener{
-            val intent = Intent(this, MvpActivity::class.java)
-            startActivity(intent)
+        binding.mvp.setOnClickListener{
+            startActivity<MvpActivity>()
         }
     }
 }
