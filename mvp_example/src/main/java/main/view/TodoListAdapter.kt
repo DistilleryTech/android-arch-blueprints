@@ -1,24 +1,22 @@
 package main.view
 
-import android.util.Log
 import com.distillery.android.domain.models.ToDoModel
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
-import com.distillery.android.mvp_example.R
 import com.distillery.android.ui.databinding.ItemTodoBinding
 import kotlinx.android.extensions.LayoutContainer
 
 @Suppress("VariableNaming")
 class TodoListAdapter(
-    private val interaction: Interaction?
+    private val checkBoxInteraction: CheckBoxInteraction?,
+    private val deleteMarkInteraction: DeleteMarkInteraction?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val DiffCallback = object : DiffUtil.ItemCallback<ToDoModel>() {
@@ -65,7 +63,8 @@ class TodoListAdapter(
         )
         return TodoViewHolder(
             itemBinding,
-            interaction
+            checkBoxInteraction,
+            deleteMarkInteraction
         )
     }
 
@@ -89,7 +88,8 @@ class TodoListAdapter(
     class TodoViewHolder
     constructor(
         private val itemTodoBinding: ItemTodoBinding,
-        private val interaction: Interaction?
+        private val checkBoxInteraction: CheckBoxInteraction?,
+        private val deleteMarkInteraction: DeleteMarkInteraction?
     ) : RecyclerView.ViewHolder(itemTodoBinding.root), LayoutContainer {
         override val containerView: View?
             get() = itemView
@@ -97,15 +97,27 @@ class TodoListAdapter(
         fun bind(item: ToDoModel) = with(itemView) {
             itemTodoBinding.descriptionTextView.text = item.description
             itemTodoBinding.titleTextView.text = item.title
+            if (item.completedAt != null) {
+                itemTodoBinding.completedCheckBox.visibility = View.GONE
+            }
             itemTodoBinding.completedCheckBox.isChecked =
                 item.completedAt != null
+
             itemTodoBinding.completedCheckBox.setOnClickListener {
-                interaction?.onClickCheckBox(item, itemTodoBinding.completedCheckBox.isChecked)
+                checkBoxInteraction?.onClick(item, itemTodoBinding.completedCheckBox.isChecked)
+            }
+
+            itemTodoBinding.deleteButton.setOnClickListener {
+                deleteMarkInteraction?.onclick(item)
             }
         }
     }
 
-    interface Interaction{
-        fun onClickCheckBox(item: ToDoModel, newState: Boolean)
+    interface CheckBoxInteraction {
+        fun onClick(item: ToDoModel, newState: Boolean)
+    }
+
+    interface DeleteMarkInteraction {
+        fun onclick(item: ToDoModel)
     }
 }

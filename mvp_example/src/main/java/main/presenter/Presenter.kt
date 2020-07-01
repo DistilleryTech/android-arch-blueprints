@@ -26,11 +26,11 @@ class Presenter(
     private val todoPendingListAdapter: TodoListAdapter,
     private val todoDoneListAdapter: TodoListAdapter,
     private val lifecycle: Lifecycle
-): LifecycleObserver, KoinComponent, CoroutineScope {
+) : LifecycleObserver, KoinComponent, CoroutineScope {
 
     private val TAG = "TodoPresenter"
     private val repository: ToDoRepository by inject()
-    var todoListAlltypes : List<ToDoModel> by Delegates.observable(listOf()){ property, oldValue, newValue ->
+    var todoListAlltypes: List<ToDoModel> by Delegates.observable(listOf()) { property, oldValue, newValue ->
 
         todoPendingListAdapter.submitList(
             newValue.filter { item -> item.completedAt == null }
@@ -41,7 +41,7 @@ class Presenter(
     }
 
     private val job = Job()
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { context,  throwable ->
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { context, throwable ->
         launch(Dispatchers.Main + Job()) {
             Log.d(TAG, "Error: ${throwable.message!!}")
             throwable.printStackTrace()
@@ -52,7 +52,7 @@ class Presenter(
 
     @InternalCoroutinesApi
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun start(){
+    fun start() {
         if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             startFlow()
         }
@@ -64,34 +64,35 @@ class Presenter(
     }
 
     @InternalCoroutinesApi
-    @Suppress("TooGenericExceptionCaught")
-    fun onCreateTodoClicked(){
+    fun onCreateTodoClicked() {
         launch {
             repository.addToDo("Title", "Description")
         }
     }
 
     @InternalCoroutinesApi
-    fun onClickCheckBox(item: ToDoModel, newState: Boolean){
-        Log.d(TAG, "item[$item], newState[$newState]")
-        launch {
-            if(newState) {
+    fun onClickCheckBox(item: ToDoModel, newState: Boolean) {
+        if (newState) {
+            launch {
                 repository.completeToDo(item.uniqueId)
-            } else {
-                repository.deleteToDo(item.uniqueId)
             }
-            startFlow()
         }
     }
 
     @InternalCoroutinesApi
-    @Suppress("TooGenericExceptionCaught", "LongMethod")
-    fun startFlow(){
+    fun onClickDeleteMark(item: ToDoModel) {
+        launch {
+            repository.deleteToDo(item.uniqueId)
+        }
+    }
+
+    @InternalCoroutinesApi
+    fun startFlow() {
         launch {
             repository.fetchToDos()
                 .catch {
                     withContext(Dispatchers.Main) {
-                        when(this@catch){
+                        when (this@catch) {
                             is IllegalArgumentException -> {
                                 Log.d(TAG, "Cheating death!")
                             }
