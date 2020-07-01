@@ -10,4 +10,5 @@
     <string name="genericError">Unknow error, please try again [0]</string>
     <string name="update_todo_list_message">Todo List Updated</string>
     <string name="deleted_todo_item_message">The item was deleted successfully</string>
+    <string name="item_added">Item Added</string>
 </resources>
