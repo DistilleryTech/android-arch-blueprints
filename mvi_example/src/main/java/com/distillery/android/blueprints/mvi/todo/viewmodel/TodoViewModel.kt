@@ -25,7 +25,6 @@ class TodoViewModel : ViewModel(), MviViewModel<TodoIntent>, KoinComponent {
 
     private val getTodoListUseCase: GetToDoListUseCase by inject()
     private val deleteTaskUseCase: DeleteTaskUseCase by inject()
-    private val saveTaskUseCase: SaveTaskUseCase by inject()
     private val completeTaskUseCase: CompleteTaskUseCase by inject()
 
     private val mutableState = MutableStateFlow<TodoState<TodoListModel>>(TodoState.LoadingState)
@@ -41,9 +40,6 @@ class TodoViewModel : ViewModel(), MviViewModel<TodoIntent>, KoinComponent {
                     }
                     is TodoIntent.DeleteTodo -> {
                         deleteTodo(intent.id)
-                    }
-                    is TodoIntent.SaveTodo -> {
-                        saveTodo(intent.title, intent.description)
                     }
                     is TodoIntent.CompleteTodo -> {
                         completeTodo(intent.id)
@@ -95,25 +91,6 @@ class TodoViewModel : ViewModel(), MviViewModel<TodoIntent>, KoinComponent {
         viewModelScope.launch {
             mutableState.value = TodoState.LoadingState
             completeTaskUseCase.completeTasks(id)
-                    .collect { state ->
-                        when (state) {
-                            is TodoState.DataState -> {
-                                mutableState.value = state
-                            }
-                            is TodoState.ConfirmationState -> {
-                                mutableState.value = state
-                            }
-                            is TodoState.ErrorState -> {
-                                mutableState.value = state
-                            }
-                        }
-                    }
-        }
-    }
-
-    private fun saveTodo(title: String, description: String) {
-        viewModelScope.launch {
-            saveTaskUseCase.saveTask(title, description)
                     .collect { state ->
                         when (state) {
                             is TodoState.DataState -> {
