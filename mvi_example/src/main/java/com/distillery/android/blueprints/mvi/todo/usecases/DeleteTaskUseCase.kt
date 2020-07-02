@@ -14,6 +14,11 @@ import java.net.ConnectException
 class DeleteTaskUseCase : KoinComponent {
     val toDoRepository: ToDoRepository by inject()
 
+    /**
+     * Deletes the given id from the repostory
+     * If succesful emits data state with the list
+     * or if an error occurs will emit error state with the cause
+     */
     suspend fun deleteTasks(idUnique: Long): Flow<TodoState<TodoListModel>> {
         return flow {
             try {

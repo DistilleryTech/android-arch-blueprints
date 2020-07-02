@@ -14,6 +14,11 @@ import java.net.ConnectException
 class CompleteTaskUseCase : KoinComponent {
     private val toDoRepository: ToDoRepository by inject()
 
+    /**
+     * Set the completion of the given id to the repository
+     * If succesful emits data state with the list
+     * or if an error occurs will emit error state with the cause
+     */
     suspend fun completeTasks(idUnique: Long): Flow<TodoState<TodoListModel>> {
         return flow {
             try {
