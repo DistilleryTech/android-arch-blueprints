@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -14,6 +15,7 @@ import com.distillery.android.domain.models.ToDoModel
 import com.distillery.android.mvvm_example.R
 import com.distillery.android.ui.adapter.ToDoListAdapter
 import com.distillery.android.ui.databinding.FragmentTodoBinding
+import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ToDoListFragment : Fragment() {
@@ -39,11 +41,34 @@ class ToDoListFragment : Fragment() {
         setupList(binding.completedTodoList, completedListAdapter, todoListViewModel.completedTodoListLiveData)
         setDividerVisibility()
         binding.buttonAdd.setOnClickListener { navigateToAddItemFragment() }
+        observeViewModel()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    /**
+     * adding observers for SnackBar and close Activity
+     */
+    private fun observeViewModel() {
+        todoListViewModel.snackBarMessageLiveData.observe(viewLifecycleOwner, Observer { message ->
+            showSnackBar(message.stringResId)
+        })
+        todoListViewModel.closeActivityLiveData.observe(viewLifecycleOwner, Observer {
+            requireActivity().finish()
+        })
+    }
+
+    /**
+     * simple snackBar with "OK" button to dismiss
+     * @param message string resource ID for message
+     */
+    private fun showSnackBar(@StringRes message: Int) {
+        val snackBar = Snackbar.make(binding.coordinatorLayout, message, Snackbar.LENGTH_SHORT)
+        snackBar.setAction(R.string.ok) { snackBar.dismiss() }
+        snackBar.show()
     }
 
     /**
