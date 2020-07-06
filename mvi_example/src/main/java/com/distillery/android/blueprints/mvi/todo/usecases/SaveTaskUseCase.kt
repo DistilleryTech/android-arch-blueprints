@@ -13,6 +13,12 @@ import java.net.ConnectException
 
 class SaveTaskUseCase : KoinComponent {
     private val toDoRepository: ToDoRepository by inject()
+
+    /**
+     * Saves the given title and description to the repository
+     * If succesful emits data state with the list
+     * or if an error occurs will emit error state with the cause
+     */
     suspend fun saveTask(title: String, description: String): Flow<TodoState<TodoListModel>> {
         return flow {
             try {
