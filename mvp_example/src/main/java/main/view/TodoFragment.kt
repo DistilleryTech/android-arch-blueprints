@@ -70,7 +70,7 @@ class TodoFragment : Fragment() {
             )
             adapter = recyclerDoneAdapter
         }
-        presenter = Presenter(recyclerPendingAdapter, recyclerDoneAdapter, lifecycle)
+        presenter = Presenter(recyclerPendingAdapter, recyclerDoneAdapter, this)
 
         lifecycle.addObserver(presenter)
     }

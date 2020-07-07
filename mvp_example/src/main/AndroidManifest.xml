@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.distillery.android.mvp_example">
-
     <application>
         <activity android:name="main.MvpActivity"
             android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
@@ -10,5 +9,4 @@
             android:screenOrientation="portrait">
         </activity>
     </application>
-
 </manifest>

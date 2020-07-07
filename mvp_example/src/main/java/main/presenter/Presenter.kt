@@ -3,6 +3,7 @@ package main.presenter
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.distillery.android.domain.ToDoRepository
 import com.distillery.android.domain.models.ToDoModel
@@ -21,16 +22,15 @@ import org.koin.core.inject
 import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
 
-@Suppress("VariableNaming")
+private val TAG = "TodoPresenter"
+
 class Presenter(
     private val todoPendingListAdapter: TodoListAdapter,
     private val todoDoneListAdapter: TodoListAdapter,
-    private val lifecycle: Lifecycle
+    private val lifecycleOwner: LifecycleOwner
 ) : LifecycleObserver, KoinComponent, CoroutineScope {
-
-    private val TAG = "TodoPresenter"
     private val repository: ToDoRepository by inject()
-    var todoListAlltypes: List<ToDoModel> by Delegates.observable(listOf()) { property, oldValue, newValue ->
+    var todoListAlltypes: List<ToDoModel> by Delegates.observable(listOf()) { _, _, newValue ->
 
         todoPendingListAdapter.submitList(
             newValue.filter { item -> item.completedAt == null }
@@ -53,7 +53,7 @@ class Presenter(
     @InternalCoroutinesApi
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun start() {
-        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+        if (lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             startFlow()
         }
     }
