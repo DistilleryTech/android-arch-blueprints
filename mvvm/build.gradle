@@ -11,20 +11,30 @@ android {
         targetSdkVersion versions.platform.targetSdk
         vectorDrawables.useSupportLibrary = true
     }
+    kotlinOptions {
+        jvmTarget = versions.platform.java
+    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(path: ':domain')
+    implementation project(path: ':ui')
 
     // Platform libraries
     implementation libraries.platform.kotlinStdLib
+    implementation libraries.platform.kotlinCoroutines
+    implementation libraries.platform.kotlinCoroutinesAndroid
 
     // Android libraries
     implementation libraries.android.core
+    implementation libraries.android.supportActivity
     implementation libraries.android.supportAppCompat
     implementation libraries.android.supportConstraintLayout
+
+    implementation libraries.android.supportLifecycleViewModel
+    implementation libraries.android.supportLifecyclelivedata
 
     // Unit tests
     testImplementation libraries.test.junit

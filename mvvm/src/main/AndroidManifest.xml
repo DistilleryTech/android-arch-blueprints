@@ -1,1 +1,11 @@
-<manifest package="com.distillery.android.mvvm" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.distillery.android.blueprints.mvvm">
+
+    <application>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/mvvm_template"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"/>
+    </application>
+</manifest>
