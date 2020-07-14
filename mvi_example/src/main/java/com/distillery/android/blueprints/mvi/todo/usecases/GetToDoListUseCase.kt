@@ -3,11 +3,7 @@ package com.distillery.android.blueprints.mvi.todo.usecases
 import com.distillery.android.blueprints.mvi.todo.TodoListModel
 import com.distillery.android.blueprints.mvi.todo.state.TodoState
 import com.distillery.android.domain.ToDoRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
@@ -21,6 +17,7 @@ class GetToDoListUseCase : KoinComponent {
      */
     suspend fun getToDoList(): Flow<TodoState<TodoListModel>> {
         return flow {
+            emit(TodoState.LoadingState)
             toDoRepository.fetchToDos()
                     .catch { e -> emit(TodoState.ErrorState(e)) }
                     .map {
@@ -28,7 +25,7 @@ class GetToDoListUseCase : KoinComponent {
                         val completedTodoList = it.filter { model -> model.completedAt != null }
                         TodoState.DataState(TodoListModel(pendingTodoList, completedTodoList))
                     }
-                    .collect{ emit(it) }
+                    .collect { emit(it) }
         }
     }
 }

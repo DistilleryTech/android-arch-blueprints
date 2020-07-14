@@ -37,7 +37,8 @@ class AddTodoItemFragment : Fragment() {
     }
 
     private fun setUpObservers() {
-        addTodoViewModel.todoState.onEach { state -> handleState(state) }
+        addTodoViewModel.todoState
+                .onEach { state -> handleState(state) }
                 .launchIn(viewCoroutineScope)
     }
 
