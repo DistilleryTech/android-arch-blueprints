@@ -1,13 +1,18 @@
 package com.distillery.android.blueprints.mvvm.viewmodels
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.distillery.android.blueprints.mvvm.managers.AppErrorHandler
 import com.distillery.android.blueprints.mvvm.managers.EventType
 import com.distillery.android.blueprints.mvvm.managers.SingleLiveEvent
+import com.distillery.android.blueprints.mvvm.managers.Trigger
+import com.distillery.android.blueprints.mvvm.managers.trigger
 import com.distillery.android.domain.ToDoRepository
 import com.distillery.android.domain.models.ToDoModel
 import kotlinx.coroutines.flow.catch
@@ -18,25 +23,39 @@ class TodoListViewModel(
     private val errorHandler: AppErrorHandler
 ) : ViewModel() {
 
-    // collects the flow and convert it to livedata with view model scope
-    private val allTodoListLiveData: LiveData<List<ToDoModel>> =
-            toDoRepository.fetchToDos()
-                    .catch { _closeActivityLiveData.value = true }
-                    .asLiveData(viewModelScope.coroutineContext)
+    private val refreshLiveData = MutableLiveData<Trigger>()
+
+    private val allTodoListLiveData: LiveData<List<ToDoModel>> = refreshLiveData.switchMap {
+        toDoRepository.fetchToDos()
+                .catch { error: Throwable -> println(error) }
+                .asLiveData(viewModelScope.coroutineContext)
+    }
 
     val todoListLiveData = allTodoListLiveData.map {
-        it.filter { item -> item.completedAt == null } // non-completedTodo list
+        it.filter { item -> item.completedAt == null }
     }
 
     val completedTodoListLiveData = allTodoListLiveData.map {
-        it.filter { item -> item.completedAt != null } // completedTodo list
+        it.filter { item -> item.completedAt != null }
     }
 
     private val _snackBarMessageLiveData = SingleLiveEvent<EventType>()
     val snackBarMessageLiveData: LiveData<EventType> = _snackBarMessageLiveData
 
-    private val _closeActivityLiveData = SingleLiveEvent<Boolean>()
-    val closeActivityLiveData: LiveData<Boolean> = _closeActivityLiveData
+    private val connectionStatusLiveData: LiveData<Boolean> = toDoRepository.connectionStatus.map { isAlive ->
+        if (!isAlive) {
+            _snackBarMessageLiveData.value = EventType.RECONNECTING
+            refreshLiveData.trigger()
+        }
+        isAlive
+    }
+
+    private val observer = Observer<Boolean?> { }
+
+    init {
+        refreshLiveData.trigger()
+        connectionStatusLiveData.observeForever(observer)
+    }
 
     /**
      * calls the repo to make the item completed
@@ -67,5 +86,9 @@ class TodoListViewModel(
                 toDoRepository.addToDo(title, description)
             } ?: EventType.ADD
         }
+    }
+
+    override fun onCleared() {
+        connectionStatusLiveData.removeObserver(observer)
     }
 }

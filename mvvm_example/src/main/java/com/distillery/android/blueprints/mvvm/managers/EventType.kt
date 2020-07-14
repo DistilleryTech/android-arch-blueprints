@@ -7,5 +7,6 @@ enum class EventType(val stringResId: Int) {
     DELETE(R.string.delete_message),
     COMPLETE(R.string.complete_message),
     UNSUPPORTED_OPERATION(R.string.error_message_unsupported),
-    CONNECTION_FAILED(R.string.error_message_connection_Failed);
+    CONNECTION_FAILED(R.string.error_message_connection_Failed),
+    RECONNECTING(R.string.error_message_reconnecting);
 }

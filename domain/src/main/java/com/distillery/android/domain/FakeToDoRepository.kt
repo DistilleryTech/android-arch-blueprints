@@ -1,9 +1,13 @@
 package com.distillery.android.domain
 
 import androidx.annotation.VisibleForTesting
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.distillery.android.domain.models.ToDoModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -29,15 +33,19 @@ const val DELAY_FOR_TODO_OPERATION = 1500L
 
 private const val TODOS_ITEMS_TO_THROW = 10
 
+private const val TODO_ITEMS_CHANNEL_TO_THROW = 5
+
 @ExperimentalCoroutinesApi
 class FakeToDoRepository(private val scope: CoroutineScope) : ToDoRepository {
 
     private val toDos = ConcurrentHashMap<Long, ToDoModel>()
-    private val todosChannel = Channel<List<ToDoModel>>()
+    private var todosChannel = Channel<List<ToDoModel>>()
+    private val generateValuesJob: Job
+    private val _connectionStatusLiveData = MutableLiveData<Boolean>()
 
     // generate infinite amount of elements, but throw exception after 10th element
     init {
-        scope.launch {
+        generateValuesJob = scope.launch {
             generateValues().collect { model ->
                 saveModel(model)
                 publishChanges()
@@ -47,14 +55,22 @@ class FakeToDoRepository(private val scope: CoroutineScope) : ToDoRepository {
         }
     }
 
+    override val connectionStatus: LiveData<Boolean>
+        get() = _connectionStatusLiveData
+
     override fun fetchToDos(): Flow<List<ToDoModel>> {
+        if (todosChannel.isClosedForSend) {
+            todosChannel = Channel()
+            todosChannel.offer(toDos.values.toList())
+            _connectionStatusLiveData.postValue(true)
+        }
         return todosChannel.receiveAsFlow()
     }
 
     override suspend fun addToDo(title: String, description: String) {
         delay(DELAY_FOR_TODO_OPERATION)
-        createAndSaveModel(title, description)
         throwIfToDoListLimitReached()
+        createAndSaveModel(title, description)
         publishChanges()
     }
 
@@ -121,11 +137,13 @@ class FakeToDoRepository(private val scope: CoroutineScope) : ToDoRepository {
     }
 
     private fun closeChannelIfLimitReached() {
-        if (toDos.size < TODOS_ITEMS_TO_THROW) {
+        if (toDos.size < TODO_ITEMS_CHANNEL_TO_THROW) {
             return
         }
         scope.launch {
             todosChannel.close(IllegalArgumentException("You died"))
+            generateValuesJob.cancelAndJoin()
+            _connectionStatusLiveData.postValue(false)
         }
     }
 

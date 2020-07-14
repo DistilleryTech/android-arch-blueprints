@@ -39,6 +39,7 @@ project.ext {
                     runner          : "androidx.test:runner:1.2.0",
                     espresso        : "androidx.test.espresso:espresso-core:3.2.0",
                     kotlinCoroutines: "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.platform.coroutines",
+                    archCore        : 'androidx.arch.core:core-testing:2.0.1',
                     koin            : "org.koin:koin-test:$versions.android.koin"
             ],
             koin    : [

@@ -56,9 +56,6 @@ class ToDoListFragment : Fragment() {
         todoListViewModel.snackBarMessageLiveData.observe(viewLifecycleOwner, Observer { message ->
             showSnackBar(message.stringResId)
         })
-        todoListViewModel.closeActivityLiveData.observe(viewLifecycleOwner, Observer {
-            requireActivity().finish()
-        })
     }
 
     /**

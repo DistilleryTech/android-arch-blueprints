@@ -46,6 +46,8 @@ dependencies {
 
     // Unit tests
     testImplementation libraries.test.junit
+    testImplementation libraries.test.kotlinCoroutines
+    testImplementation libraries.test.archCore
 
     // Koin
     api libraries.koin.android

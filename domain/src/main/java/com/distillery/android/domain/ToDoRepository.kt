@@ -1,10 +1,18 @@
 package com.distillery.android.domain
 
+import androidx.lifecycle.LiveData
 import com.distillery.android.domain.models.ToDoModel
 import kotlinx.coroutines.flow.Flow
 import java.net.ConnectException
 
 interface ToDoRepository {
+    /**
+     * this live data represents the repo connection status with boolean type
+     * Active = true, InActive = false by listening to this live data you could
+     * able to reconnect with the repo data stream
+     */
+    val connectionStatus: LiveData<Boolean>
+
     /**
      * Fetches news To Do items.
      * New item appears from time to time.
