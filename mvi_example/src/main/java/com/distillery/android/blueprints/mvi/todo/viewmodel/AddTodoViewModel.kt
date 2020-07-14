@@ -3,6 +3,7 @@ package com.distillery.android.blueprints.mvi.todo.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.distillery.android.blueprints.mvi.MviViewModel
+import com.distillery.android.blueprints.mvi.emitState
 import com.distillery.android.blueprints.mvi.todo.AddTodoIntent
 import com.distillery.android.blueprints.mvi.todo.TodoListModel
 import com.distillery.android.blueprints.mvi.todo.state.TodoState
@@ -40,24 +41,10 @@ class AddTodoViewModel : ViewModel(), MviViewModel<AddTodoIntent>, KoinComponent
     private fun saveTodo(title: String, description: String) {
         if (title.isNotBlank() && description.isNotBlank()) {
             viewModelScope.launch {
-                saveTaskUseCase.saveTask(title, description)
-                        .collect { state ->
-                            when (state) {
-                                is TodoState.DataState -> {
-                                    mutableState.value = state
-                                }
-                                is TodoState.ConfirmationState -> {
-                                    mutableState.value = state
-                                }
-                                is TodoState.ErrorState -> {
-                                    mutableState.value = state
-                                }
-                            }
-                        }
+                saveTaskUseCase
+                        .saveTask(title, description)
+                        .emitState(mutableState)
             }
-        }
-        viewModelScope.launch {
-
         }
     }
 }
