@@ -30,7 +30,7 @@ project.ext {
                     supportLifecycleRuntime  : "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0",
                     supportRecyclerView      : "androidx.recyclerview:recyclerview:1.1.0",
                     supportLifecyclelivedata : "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0",
-                    supportActivity          : "androidx.activity:activity-ktx:1.1.0",
+                    supportFragment          : "androidx.fragment:fragment-ktx:1.2.5",
                     material                 : "com.google.android.material:material:1.1.0"
             ],
             test    : [

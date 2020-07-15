@@ -8,11 +8,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ExampleViewModel : ViewModel() {
-    companion object {
-        const val DELAY_MILLIS = 1000L
-    }
 
-    private val data: MutableLiveData<List<String>> by lazy { MutableLiveData<List<String>>() }
+    private val data: MutableLiveData<List<String>>  = MutableLiveData<List<String>>()
 
     init {
         loadData()
@@ -27,7 +24,11 @@ class ExampleViewModel : ViewModel() {
         viewModelScope.launch {
             // TODO: Get your data from a repository or directly from your API, database, etc
             delay(DELAY_MILLIS)
-            data.value = listOf("new values")
+            data.postValue(listOf("new values"))
         }
+    }
+
+    companion object {
+        const val DELAY_MILLIS = 1000L
     }
 }

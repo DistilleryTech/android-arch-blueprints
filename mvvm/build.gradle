@@ -29,7 +29,7 @@ dependencies {
 
     // Android libraries
     implementation libraries.android.core
-    implementation libraries.android.supportActivity
+    implementation libraries.android.supportFragment
     implementation libraries.android.supportAppCompat
     implementation libraries.android.supportConstraintLayout
 
