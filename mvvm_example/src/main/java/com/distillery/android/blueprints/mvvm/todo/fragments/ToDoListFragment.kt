@@ -1,4 +1,4 @@
-package com.distillery.android.blueprints.mvvm.fragments
+package com.distillery.android.blueprints.mvvm.todo.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.distillery.android.blueprints.mvvm.viewmodels.TodoListViewModel
+import com.distillery.android.blueprints.mvvm.todo.viewmodel.TodoListViewModel
 import com.distillery.android.domain.models.ToDoModel
 import com.distillery.android.mvvm_example.R
 import com.distillery.android.ui.adapter.ToDoListAdapter
@@ -19,7 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class ToDoListFragment : Fragment() {
-    // this  view model will be shared with  AddTodoFragment with Activity scope
+    // this view model will be shared with AddTodoFragment with Activity scope
     private val todoListViewModel: TodoListViewModel by sharedViewModel()
     private var _binding: FragmentTodoBinding? = null
     private val binding get() = _binding!! // use this property only between onCreateView and onDestroyView
@@ -89,7 +89,7 @@ class ToDoListFragment : Fragment() {
      * sets the divider line visibility by checking completed and non completed list items
      * if the only of the both list is empty then it hides the line otherwise makes it visible
      */
-    private fun setDividerVisibility() { // todo
+    private fun setDividerVisibility() { // TODO is this todo actual one?
         val isBothListEmpty = completedListAdapter.currentList.isEmpty() || todoListAdapter.currentList.isEmpty()
         binding.divider.visibility = (if (isBothListEmpty) View.GONE else View.VISIBLE)
     }
@@ -100,8 +100,8 @@ class ToDoListFragment : Fragment() {
      */
     private fun getToDoListAdapter(): ToDoListAdapter {
         return ToDoListAdapter(
-                onDeleteClickListener = todoListViewModel::deleteTodo,
-                onCompleteClickListener = todoListViewModel::completeTodo
+            onDeleteClickListener = todoListViewModel::deleteTodo,
+            onCompleteClickListener = todoListViewModel::completeTodo
         )
     }
 
@@ -110,14 +110,12 @@ class ToDoListFragment : Fragment() {
      */
     private fun navigateToAddItemFragment() {
         parentFragmentManager.beginTransaction()
-                .addToBackStack(null)
-                .replace(R.id.container, AddTodoItemFragment.newInstance())
-                .commit()
+            .addToBackStack(this::javaClass.name)
+            .replace(R.id.container, AddTodoItemFragment.newInstance())
+            .commit()
     }
 
     companion object {
-        fun newInstance(): Fragment {
-            return ToDoListFragment()
-        }
+        fun newInstance(): Fragment = ToDoListFragment()
     }
 }

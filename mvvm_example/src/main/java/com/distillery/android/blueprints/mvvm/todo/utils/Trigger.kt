@@ -1,4 +1,4 @@
-package com.distillery.android.blueprints.mvvm.managers
+package com.distillery.android.blueprints.mvvm.todo.utils
 
 import androidx.lifecycle.MutableLiveData
 

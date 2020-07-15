@@ -1,4 +1,4 @@
-package com.distillery.android.blueprints.mvvm.managers
+package com.distillery.android.blueprints.mvvm.todo.utils
 
 import android.util.Log
 import androidx.annotation.MainThread
@@ -27,6 +27,7 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
         pending.set(true)
         super.setValue(t)
     }
+
     /**
      * Used for cases where T is Void, to make calls cleaner.
      */
@@ -34,7 +35,8 @@ class SingleLiveEvent<T> : MutableLiveData<T>() {
     fun call() {
         value = null
     }
+
     companion object {
-        private val TAG = "SingleLiveEvent"
+        private const val TAG = "SingleLiveEvent"
     }
 }

@@ -1,4 +1,4 @@
-package com.distillery.android.blueprints.mvvm.viewmodels
+package com.distillery.android.blueprints.mvvm.todo.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,11 +8,11 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import com.distillery.android.blueprints.mvvm.managers.AppErrorHandler
-import com.distillery.android.blueprints.mvvm.managers.EventType
-import com.distillery.android.blueprints.mvvm.managers.SingleLiveEvent
-import com.distillery.android.blueprints.mvvm.managers.Trigger
-import com.distillery.android.blueprints.mvvm.managers.trigger
+import com.distillery.android.blueprints.mvvm.todo.utils.AppErrorHandler
+import com.distillery.android.blueprints.mvvm.todo.utils.EventType
+import com.distillery.android.blueprints.mvvm.todo.utils.SingleLiveEvent
+import com.distillery.android.blueprints.mvvm.todo.utils.Trigger
+import com.distillery.android.blueprints.mvvm.todo.utils.trigger
 import com.distillery.android.domain.ToDoRepository
 import com.distillery.android.domain.models.ToDoModel
 import kotlinx.coroutines.flow.catch
@@ -25,10 +25,10 @@ class TodoListViewModel(
 
     private val refreshLiveData = MutableLiveData<Trigger>()
 
-    private val allTodoListLiveData: LiveData<List<ToDoModel>> = refreshLiveData.switchMap {
+    private val allTodoListLiveData = refreshLiveData.switchMap {
         toDoRepository.fetchToDos()
-                .catch { error: Throwable -> println(error) }
-                .asLiveData(viewModelScope.coroutineContext)
+            .catch { error: Throwable -> println(error) }
+            .asLiveData(viewModelScope.coroutineContext)
     }
 
     val todoListLiveData = allTodoListLiveData.map {
@@ -42,7 +42,7 @@ class TodoListViewModel(
     private val _snackBarMessageLiveData = SingleLiveEvent<EventType>()
     val snackBarMessageLiveData: LiveData<EventType> = _snackBarMessageLiveData
 
-    private val connectionStatusLiveData: LiveData<Boolean> = toDoRepository.connectionStatus.map { isAlive ->
+    private val connectionStatusLiveData = toDoRepository.connectionStatus.map { isAlive ->
         if (!isAlive) {
             _snackBarMessageLiveData.value = EventType.RECONNECTING
             refreshLiveData.trigger()
@@ -50,11 +50,11 @@ class TodoListViewModel(
         isAlive
     }
 
-    private val observer = Observer<Boolean?> { }
+    private val connectionStatusObserver = Observer<Boolean> {}
 
     init {
         refreshLiveData.trigger()
-        connectionStatusLiveData.observeForever(observer)
+        connectionStatusLiveData.observeForever(connectionStatusObserver)
     }
 
     /**
@@ -89,6 +89,6 @@ class TodoListViewModel(
     }
 
     override fun onCleared() {
-        connectionStatusLiveData.removeObserver(observer)
+        connectionStatusLiveData.removeObserver(connectionStatusObserver)
     }
 }

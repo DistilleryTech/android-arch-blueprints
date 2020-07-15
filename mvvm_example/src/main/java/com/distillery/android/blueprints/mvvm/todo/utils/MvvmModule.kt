@@ -1,6 +1,6 @@
-package com.distillery.android.blueprints.mvvm.managers
+package com.distillery.android.blueprints.mvvm.todo.utils
 
-import com.distillery.android.blueprints.mvvm.viewmodels.TodoListViewModel
+import com.distillery.android.blueprints.mvvm.todo.viewmodel.TodoListViewModel
 import com.distillery.android.domain.FakeToDoRepository
 import com.distillery.android.domain.ToDoRepository
 import kotlinx.coroutines.CoroutineScope
@@ -13,12 +13,13 @@ import org.koin.dsl.module
 
 @ExperimentalCoroutinesApi
 val mvvmModule = module {
-    val tag = "MVVM" // for named scope to avoid conflicts between modules
-    factory(named(tag)) {
+    factory(named(TAG)) {
         val errorHandler = get<AppErrorHandler>()
         CoroutineScope(Dispatchers.IO + Job() + errorHandler.unCaughtExceptionHandler)
     }
-    single<ToDoRepository>(named(tag)) { FakeToDoRepository(get(named(tag))) }
+    single<ToDoRepository>(named(TAG)) { FakeToDoRepository(get(named(TAG))) }
     single { AppErrorHandler() }
-    viewModel { TodoListViewModel(get(named(tag)), get()) }
+    viewModel { TodoListViewModel(get(named(TAG)), get()) }
 }
+
+private const val TAG = "MVVM" // for named scope to avoid conflicts between modules

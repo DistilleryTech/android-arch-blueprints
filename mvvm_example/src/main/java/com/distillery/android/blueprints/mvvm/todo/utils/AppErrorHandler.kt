@@ -1,9 +1,8 @@
-package com.distillery.android.blueprints.mvvm.managers
+package com.distillery.android.blueprints.mvvm.todo.utils
 
 import android.util.Log
 import kotlinx.coroutines.CoroutineExceptionHandler
 import java.net.ConnectException
-
 
 class AppErrorHandler {
 

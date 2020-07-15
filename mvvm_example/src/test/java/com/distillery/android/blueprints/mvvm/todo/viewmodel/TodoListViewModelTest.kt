@@ -1,11 +1,11 @@
-package com.distillery.android.blueprints.mvvm.viewmodels
+package com.distillery.android.blueprints.mvvm.todo.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.viewModelScope
 import com.distillery.android.blueprints.mvvm.LiveDataTest
 import com.distillery.android.blueprints.mvvm.MainCoroutineRule
-import com.distillery.android.blueprints.mvvm.managers.AppErrorHandler
-import com.distillery.android.blueprints.mvvm.managers.EventType
+import com.distillery.android.blueprints.mvvm.todo.utils.AppErrorHandler
+import com.distillery.android.blueprints.mvvm.todo.utils.EventType
 import com.distillery.android.domain.FakeToDoRepository
 import com.distillery.android.domain.models.ToDoModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi

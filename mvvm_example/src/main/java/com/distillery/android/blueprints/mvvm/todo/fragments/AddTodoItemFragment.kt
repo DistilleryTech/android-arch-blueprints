@@ -1,11 +1,11 @@
-package com.distillery.android.blueprints.mvvm.fragments
+package com.distillery.android.blueprints.mvvm.todo.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.distillery.android.blueprints.mvvm.viewmodels.TodoListViewModel
+import com.distillery.android.blueprints.mvvm.todo.viewmodel.TodoListViewModel
 import com.distillery.android.ui.databinding.FragmentAddTodoItemBinding
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
