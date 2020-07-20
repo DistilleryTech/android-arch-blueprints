@@ -1,6 +1,7 @@
 package main.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +10,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.distillery.android.domain.models.ToDoModel
 import com.distillery.android.ui.databinding.FragmentTodoBinding
 import kotlinx.coroutines.InternalCoroutinesApi
+import main.presenter.Contract
 import main.presenter.Presenter
 
-class TodoFragment : Fragment() {
+class TodoFragment : Fragment(),
+    Contract.PublishToView,
+    Contract.ForwardViewInteractionToPresenter
+{
 
     private var _binding: FragmentTodoBinding? = null
     private val binding get() = _binding!!
@@ -45,7 +50,8 @@ class TodoFragment : Fragment() {
             recyclerPendingAdapter = TodoListAdapter(
                 object : TodoListAdapter.CheckBoxInteraction {
                     override fun onClick(item: ToDoModel, newState: Boolean) =
-                        presenter.onClickCheckBox(item, newState)
+                        //presenter.onClickCheckBox(item, newState)
+                        onClickCheckboxCompletion(item, newState)
                 },
                 object : TodoListAdapter.DeleteMarkInteraction {
                     override fun onclick(item: ToDoModel) {
@@ -60,7 +66,8 @@ class TodoFragment : Fragment() {
             recyclerDoneAdapter = TodoListAdapter(
                 object : TodoListAdapter.CheckBoxInteraction {
                     override fun onClick(item: ToDoModel, newState: Boolean) =
-                        presenter.onClickCheckBox(item, newState)
+                        //presenter.onClickCheckBox(item, newState)
+                        onClickCheckboxCompletion(item, newState)
                 },
                 object : TodoListAdapter.DeleteMarkInteraction {
                     override fun onclick(item: ToDoModel) {
@@ -84,5 +91,16 @@ class TodoFragment : Fragment() {
 
     companion object {
         private val TAG = TodoFragment::class.qualifiedName ?: "TodoFragment"
+        @JvmStatic
+        fun newInstance() = TodoFragment()
     }
+
+    override fun showToastMessage(message: String) {}
+
+    @InternalCoroutinesApi
+    override fun onClickCheckboxCompletion(item: ToDoModel, newState: Boolean) {
+        presenter.onClickCheckboxCompletion(item, newState)
+    }
+
+    override fun onClickDeleteTask(item: ToDoModel) {}
 }

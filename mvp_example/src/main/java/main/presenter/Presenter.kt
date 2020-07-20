@@ -28,7 +28,9 @@ class Presenter(
     private val todoPendingListAdapter: TodoListAdapter,
     private val todoDoneListAdapter: TodoListAdapter,
     private val lifecycleOwner: LifecycleOwner
-) : LifecycleObserver, KoinComponent, CoroutineScope {
+) : LifecycleObserver, KoinComponent, CoroutineScope,
+    Contract.ForwardViewInteractionToPresenter,
+    Contract.PublishToView{
     private val repository: ToDoRepository by inject()
     var todoListAlltypes: List<ToDoModel> by Delegates.observable(listOf()) { _, _, newValue ->
 
@@ -70,6 +72,7 @@ class Presenter(
         }
     }
 
+    /*
     @InternalCoroutinesApi
     fun onClickCheckBox(item: ToDoModel, newState: Boolean) {
         if (newState) {
@@ -78,6 +81,7 @@ class Presenter(
             }
         }
     }
+    */
 
     @InternalCoroutinesApi
     fun onClickDeleteMark(item: ToDoModel) {
@@ -109,4 +113,17 @@ class Presenter(
                 }
         }
     }
+
+    @InternalCoroutinesApi
+    override fun onClickCheckboxCompletion(item: ToDoModel, newState: Boolean) {
+        if (newState) {
+            launch {
+                repository.completeToDo(item.uniqueId)
+            }
+        }
+    }
+
+    override fun onClickDeleteTask(item: ToDoModel) {}
+
+    override fun showToastMessage(message: String) {}
 }
