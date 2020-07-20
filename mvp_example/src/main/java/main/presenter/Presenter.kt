@@ -123,7 +123,9 @@ class Presenter(
         }
     }
 
+    @Suppress("EmptyFunctionBlock")
     override fun onClickDeleteTask(item: ToDoModel) {}
 
+    @Suppress("EmptyFunctionBlock")
     override fun showToastMessage(message: String) {}
 }

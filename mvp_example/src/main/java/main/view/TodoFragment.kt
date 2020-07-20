@@ -95,12 +95,14 @@ class TodoFragment : Fragment(),
         fun newInstance() = TodoFragment()
     }
 
-    override fun showToastMessage(message: String) {}
-
     @InternalCoroutinesApi
     override fun onClickCheckboxCompletion(item: ToDoModel, newState: Boolean) {
         presenter.onClickCheckboxCompletion(item, newState)
     }
 
+    @Suppress("EmptyFunctionBlock")
+    override fun showToastMessage(message: String) {}
+
+    @Suppress("EmptyFunctionBlock")
     override fun onClickDeleteTask(item: ToDoModel) {}
 }
