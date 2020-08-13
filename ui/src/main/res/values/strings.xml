@@ -5,4 +5,11 @@
     <string name="cancel">Cancel</string>
     <string name="add">Add</string>
     <string name="delete">Delete</string>
+    <string name="error_message_unsupported">This operation not Supported</string>
+    <string name="error_message_connection_Failed">Could not update Server, Connection Failed</string>
+    <string name="error_message_reconnecting">Connection interrupted. reconnecting to Server…</string>
+    <string name="delete_message">Item has been deleted</string>
+    <string name="add_message">Item has been added</string>
+    <string name="complete_message">Item has been completed</string>
+    <string name="ok">OK</string>
 </resources>

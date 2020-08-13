@@ -30,8 +30,9 @@ project.ext {
                     supportLifecycleRuntime  : "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0",
                     supportRecyclerView      : "androidx.recyclerview:recyclerview:1.1.0",
                     supportLifecyclelivedata : "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0",
-                    material                 : "com.google.android.material:material:1.1.0",
                     lifecycle                : "androidx.lifecycle:lifecycle-extensions:2.2.0",
+                    supportFragment          : "androidx.fragment:fragment-ktx:1.2.5",
+                    material                 : "com.google.android.material:material:1.1.0"
             ],
             test    : [
                     junit           : "junit:junit:4.13",
@@ -40,6 +41,7 @@ project.ext {
                     runner          : "androidx.test:runner:1.2.0",
                     espresso        : "androidx.test.espresso:espresso-core:3.2.0",
                     kotlinCoroutines: "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.platform.coroutines",
+                    archCore        : 'androidx.arch.core:core-testing:2.0.1',
                     koin            : "org.koin:koin-test:$versions.android.koin"
             ],
             koin    : [

@@ -126,15 +126,16 @@ class TodoListFragment : Fragment() {
 
     private fun getToDoListAdapter(): ToDoListAdapter {
         return ToDoListAdapter(
-                onDeleteClickListener= {
-            todoViewModel.proccessIntents(flow {
-                emit(TodoIntent.DeleteTodo(it.uniqueId))
-            })},
+                onDeleteClickListener = {
+                    todoViewModel.proccessIntents(flow {
+                        emit(TodoIntent.DeleteTodo(it.uniqueId))
+                    })
+                },
                 onCompleteClickListener = {
-            todoViewModel.proccessIntents(flow {
-                emit(TodoIntent.CompleteTodo(it.uniqueId))
-            })
-        })
+                    todoViewModel.proccessIntents(flow {
+                        emit(TodoIntent.CompleteTodo(it.uniqueId))
+                    })
+                })
     }
 
     companion object {
