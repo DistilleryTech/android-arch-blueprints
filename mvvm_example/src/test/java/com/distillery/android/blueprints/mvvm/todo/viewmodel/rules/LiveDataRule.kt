@@ -31,9 +31,9 @@ class LiveDataRule : AfterEachCallback, BeforeEachCallback, TestExecutionExcepti
 
         assertTrue(errorListCopy.isEmpty()) {
             errorListCopy
-                .asSequence()
-                .mapTo(mutableListOf(), Throwable::toString)
-                .joinToString { it }
+                    .asSequence()
+                    .mapTo(mutableListOf(), Throwable::toString)
+                    .joinToString { it }
         }
     }
 }

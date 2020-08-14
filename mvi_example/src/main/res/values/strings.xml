@@ -1,12 +1,4 @@
 <resources>
-    <string name="app_name">Distillery Android Architecture Blueprints</string>
-    <string name="title">Title</string>
-    <string name="description">Description</string>
-    <string name="cancel">Cancel</string>
-    <string name="todo_dialog_message">TODO will be added</string>
-    <string name="todo_dialog_title">TODO task</string>
-    <string name="add">Add</string>
-    <string name="delete">Delete</string>
     <string name="genericError">Unknow error, please try again [0]</string>
     <string name="update_todo_list_message">Todo List Updated</string>
     <string name="deleted_todo_item_message">The item was deleted successfully</string>

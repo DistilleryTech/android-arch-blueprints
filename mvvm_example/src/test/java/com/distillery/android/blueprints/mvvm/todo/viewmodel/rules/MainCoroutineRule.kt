@@ -26,4 +26,3 @@ open class MainCoroutineRule : AfterEachCallback, BeforeEachCallback {
         dispatcher?.runBlockingTest(block)
     }
 }
-

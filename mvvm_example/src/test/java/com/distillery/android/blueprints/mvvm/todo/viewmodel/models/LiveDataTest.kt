@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 
 class LiveDataTest<T>(
-    private val sourceLiveData: LiveData<T>,
-    onChanged: ((T) -> Unit)? = null
+        private val sourceLiveData: LiveData<T>,
+        onChanged: ((T) -> Unit)? = null
 ) {
     private var result: T? = null
 
