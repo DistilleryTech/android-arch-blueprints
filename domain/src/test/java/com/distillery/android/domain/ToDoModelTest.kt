@@ -2,10 +2,10 @@ package com.distillery.android.domain
 
 import com.distillery.android.domain.models.ToDoModel
 import com.distillery.android.domain.models.isCompleted
-import org.junit.Assert.assertTrue
-import org.junit.Assert.assertFalse
-import org.junit.Test
-import java.util.Date
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import java.util.*
 
 class ToDoModelTest {
 

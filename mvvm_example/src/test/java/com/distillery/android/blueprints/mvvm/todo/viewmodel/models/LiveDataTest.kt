@@ -1,4 +1,4 @@
-package com.distillery.android.blueprints.mvvm
+package com.distillery.android.blueprints.mvvm.todo.viewmodel.models
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -7,7 +7,7 @@ class LiveDataTest<T>(
     private val sourceLiveData: LiveData<T>,
     onChanged: ((T) -> Unit)? = null
 ) {
-    var result: T? = null
+    private var result: T? = null
 
     private val observer = Observer<T> { t ->
         result = t

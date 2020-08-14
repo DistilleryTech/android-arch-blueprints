@@ -1,15 +1,12 @@
 package com.distillery.android.domain
 
 import com.distillery.android.domain.models.ToDoModel
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 /**
  * Fraction of time in ms to allow suspend method to kick in.
@@ -19,11 +16,12 @@ private const val FRACTION_OF_TIME = 100L
 
 private const val EXPECTED_AMOUNT_OF_ELEMENTS = 2
 
+@ExperimentalCoroutinesApi
 class FakeToDoRepositoryTest {
 
     private lateinit var repository: ToDoRepository
 
-    @Before
+    @BeforeEach
     fun setup() {
         repository = FakeToDoRepository(scope = GlobalScope)
     }

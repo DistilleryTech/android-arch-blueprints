@@ -1,29 +1,28 @@
 package com.distillery.android.blueprints.mvvm.todo.viewmodel
 
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.viewModelScope
-import com.distillery.android.blueprints.mvvm.LiveDataTest
-import com.distillery.android.blueprints.mvvm.MainCoroutineRule
 import com.distillery.android.blueprints.mvvm.todo.utils.AppErrorHandler
 import com.distillery.android.blueprints.mvvm.todo.utils.EventType
+import com.distillery.android.blueprints.mvvm.todo.viewmodel.models.LiveDataTest
+import com.distillery.android.blueprints.mvvm.todo.viewmodel.rules.LiveDataRule
+import com.distillery.android.blueprints.mvvm.todo.viewmodel.rules.MainCoroutineRule
 import com.distillery.android.domain.FakeToDoRepository
 import com.distillery.android.domain.models.ToDoModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
-import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.extension.RegisterExtension
 
 @ExperimentalCoroutinesApi
+@ExtendWith(LiveDataRule::class)
 class TodoListViewModelTest {
-    @get:Rule
-    val rule = InstantTaskExecutorRule()
 
-    @get:Rule
+    @JvmField
+    @RegisterExtension
     val coroutineRule = MainCoroutineRule()
 
     private lateinit var viewModel: TodoListViewModel
@@ -31,7 +30,7 @@ class TodoListViewModelTest {
     private lateinit var completedTodoListLiveDataTest: LiveDataTest<List<ToDoModel>>
     private lateinit var snackBarMessageLiveDataTest: LiveDataTest<EventType>
 
-    @Before
+    @BeforeEach
     fun setup() {
         coroutineRule {
             viewModel = TodoListViewModel(FakeToDoRepository(this), AppErrorHandler())
@@ -91,7 +90,7 @@ class TodoListViewModelTest {
         assertEquals(EventType.UNSUPPORTED_OPERATION, viewModel.snackBarMessageLiveData.value)
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         viewModel.viewModelScope.cancel()
         snackBarMessageLiveDataTest.removeObserver()

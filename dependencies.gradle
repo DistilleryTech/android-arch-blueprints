@@ -41,7 +41,10 @@ project.ext {
                     espresso        : "androidx.test.espresso:espresso-core:3.2.0",
                     kotlinCoroutines: "org.jetbrains.kotlinx:kotlinx-coroutines-test:$versions.platform.coroutines",
                     archCore        : 'androidx.arch.core:core-testing:2.0.1',
-                    koin            : "org.koin:koin-test:$versions.android.koin"
+                    koin            : "org.koin:koin-test:$versions.android.koin",
+                    jupiterApi      : "org.junit.jupiter:junit-jupiter-api:5.3.2",
+                    jupiterParams   : "org.junit.jupiter:junit-jupiter-params:5.3.2",
+                    jupiterEngine   : "org.junit.jupiter:junit-jupiter-engine:5.3.2"
             ],
             koin    : [
                     core      : "org.koin:koin-core:$versions.android.koin",

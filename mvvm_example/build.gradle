@@ -45,12 +45,11 @@ dependencies {
     implementation libraries.android.material
 
     // Unit tests
-    testImplementation libraries.test.junit
     testImplementation libraries.test.kotlinCoroutines
-    testImplementation libraries.test.archCore
+    testImplementation libraries.test.jupiterApi
+    testRuntimeOnly libraries.test.jupiterEngine
 
     // Koin
     api libraries.koin.android
     api libraries.koin.viewModel
-    testImplementation libraries.koin.test
 }
