@@ -1,38 +1,37 @@
 package main.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
 import com.distillery.android.domain.models.ToDoModel
 import com.distillery.android.ui.databinding.FragmentTodoBinding
 import kotlinx.coroutines.InternalCoroutinesApi
-import main.presenter.Contract
 import main.presenter.Presenter
 
 class TodoFragment : Fragment(),
-    Contract.PublishToView,
-    Contract.ForwardViewInteractionToPresenter
+    TodoContract.View
 {
-
     private var _binding: FragmentTodoBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var recyclerPendingAdapter: TodoListAdapter
     private lateinit var recyclerDoneAdapter: TodoListAdapter
-
-    private lateinit var presenter: Presenter
+    private lateinit var presenter: TodoContract.Presenter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        _binding = FragmentTodoBinding.inflate(inflater, container, false)
+        _binding = FragmentTodoBinding.inflate(
+            inflater,
+            container,
+            false
+        )
         return binding.root
     }
 
@@ -50,12 +49,11 @@ class TodoFragment : Fragment(),
             recyclerPendingAdapter = TodoListAdapter(
                 object : TodoListAdapter.CheckBoxInteraction {
                     override fun onClick(item: ToDoModel, newState: Boolean) =
-                        //presenter.onClickCheckBox(item, newState)
-                        onClickCheckboxCompletion(item, newState)
+                        presenter.onClickCheckboxCompletion(item)
                 },
                 object : TodoListAdapter.DeleteMarkInteraction {
                     override fun onclick(item: ToDoModel) {
-                        presenter.onClickDeleteMark(item)
+                        presenter.onClickDeleteTask(item)
                     }
                 }
             )
@@ -65,26 +63,35 @@ class TodoFragment : Fragment(),
             layoutManager = LinearLayoutManager(this@TodoFragment.context)
             recyclerDoneAdapter = TodoListAdapter(
                 object : TodoListAdapter.CheckBoxInteraction {
-                    override fun onClick(item: ToDoModel, newState: Boolean) =
-                        //presenter.onClickCheckBox(item, newState)
-                        onClickCheckboxCompletion(item, newState)
+                    override fun onClick(
+                        item: ToDoModel,
+                        newState: Boolean
+                    ) = Unit
                 },
                 object : TodoListAdapter.DeleteMarkInteraction {
                     override fun onclick(item: ToDoModel) {
-                        presenter.onClickDeleteMark(item)
+                        presenter.onClickDeleteTask(item)
                     }
                 }
             )
             adapter = recyclerDoneAdapter
         }
-        presenter = Presenter(recyclerPendingAdapter, recyclerDoneAdapter, this)
+        binding.buttonAdd.setOnClickListener {
+            presenter.onClickAddTask()
+        }
+        val presenter = Presenter(
+            recyclerPendingAdapter,
+            recyclerDoneAdapter,
+            this,this
+        )
+        this.presenter = presenter
 
         lifecycle.addObserver(presenter)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // avoid memory leaks
+        // prevent memory leaks
         binding.todoList.adapter = null
         _binding = null
     }
@@ -95,14 +102,15 @@ class TodoFragment : Fragment(),
         fun newInstance() = TodoFragment()
     }
 
-    @InternalCoroutinesApi
-    override fun onClickCheckboxCompletion(item: ToDoModel, newState: Boolean) {
-        presenter.onClickCheckboxCompletion(item, newState)
-    }
+    @Suppress("EmptyFunctionBlock")
+    override fun showError(message: String) { }
 
     @Suppress("EmptyFunctionBlock")
-    override fun showToastMessage(message: String) {}
+    override fun notifyTaskDeleted() { }
 
     @Suppress("EmptyFunctionBlock")
-    override fun onClickDeleteTask(item: ToDoModel) {}
+    override fun showPendingTasks(tasks: List<ToDoModel>) { }
+
+    @Suppress("EmptyFunctionBlock")
+    override fun showDoneTasks(tasks: List<ToDoModel>) { }
 }

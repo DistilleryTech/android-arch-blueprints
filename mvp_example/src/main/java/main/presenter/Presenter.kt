@@ -5,6 +5,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
+import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
 import com.distillery.android.domain.ToDoRepository
 import com.distillery.android.domain.models.ToDoModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -27,10 +28,10 @@ private val TAG = "TodoPresenter"
 class Presenter(
     private val todoPendingListAdapter: TodoListAdapter,
     private val todoDoneListAdapter: TodoListAdapter,
-    private val lifecycleOwner: LifecycleOwner
+    private val lifecycleOwner: LifecycleOwner,
+    private val view: TodoContract.View
 ) : LifecycleObserver, KoinComponent, CoroutineScope,
-    Contract.ForwardViewInteractionToPresenter,
-    Contract.PublishToView{
+    TodoContract.Presenter{
     private val repository: ToDoRepository by inject()
     var todoListAlltypes: List<ToDoModel> by Delegates.observable(listOf()) { _, _, newValue ->
 
@@ -43,11 +44,11 @@ class Presenter(
     }
 
     private val job = Job()
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { context, throwable ->
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         launch(Dispatchers.Main + Job()) {
             Log.d(TAG, "Error: ${throwable.message!!}")
             throwable.printStackTrace()
-            // view.showError(throwable.message!!)
+            view.showError(throwable.message ?: "Undefined error")
         }
     }
     override val coroutineContext: CoroutineContext = job + Dispatchers.IO + coroutineExceptionHandler
@@ -63,31 +64,6 @@ class Presenter(
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun stop() {
         job.cancel()
-    }
-
-    @InternalCoroutinesApi
-    fun onCreateTodoClicked() {
-        launch {
-            repository.addToDo("Title", "Description")
-        }
-    }
-
-    /*
-    @InternalCoroutinesApi
-    fun onClickCheckBox(item: ToDoModel, newState: Boolean) {
-        if (newState) {
-            launch {
-                repository.completeToDo(item.uniqueId)
-            }
-        }
-    }
-    */
-
-    @InternalCoroutinesApi
-    fun onClickDeleteMark(item: ToDoModel) {
-        launch {
-            repository.deleteToDo(item.uniqueId)
-        }
     }
 
     @InternalCoroutinesApi
@@ -114,18 +90,21 @@ class Presenter(
         }
     }
 
+    override fun onClickCheckboxCompletion(item: ToDoModel) {
+        repository.completeToDo(item.uniqueId)
+    }
+
     @InternalCoroutinesApi
-    override fun onClickCheckboxCompletion(item: ToDoModel, newState: Boolean) {
-        if (newState) {
-            launch {
-                repository.completeToDo(item.uniqueId)
-            }
+    override fun onClickDeleteTask(item: ToDoModel) {
+        launch {
+            repository.deleteToDo(item.uniqueId)
         }
     }
 
-    @Suppress("EmptyFunctionBlock")
-    override fun onClickDeleteTask(item: ToDoModel) {}
-
-    @Suppress("EmptyFunctionBlock")
-    override fun showToastMessage(message: String) {}
+    @InternalCoroutinesApi
+    override fun onClickAddTask() {
+        launch {
+            repository.addToDo("Title", "Description")
+        }
+    }
 }
