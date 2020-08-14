@@ -1,4 +1,4 @@
-package di
+package com.distillery.android.blueprints.mvp
 
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.dsl.module

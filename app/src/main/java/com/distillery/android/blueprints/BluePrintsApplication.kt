@@ -2,7 +2,8 @@ package com.distillery.android.blueprints
 
 import android.app.Application
 import com.distillery.android.blueprints.mvi.mviModule
-import di.mvpModule
+import com.distillery.android.blueprints.mvp.mvpModule
+import com.distillery.android.blueprints.mvvm.todo.utils.mvvmModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -16,6 +17,7 @@ class BluePrintsApplication : Application() {
             androidLogger(Level.INFO)
             androidContext(this@BluePrintsApplication)
             modules(listOf(
+                    mvvmModule,
                     mviModule,
                     mvpModule
             ))
