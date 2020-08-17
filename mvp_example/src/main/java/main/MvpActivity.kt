@@ -5,6 +5,7 @@ import android.os.Bundle
 import com.distillery.android.mvp_example.R
 import main.view.TodoFragment
 
+private const val FRAG_ID = "TodoFragment"
 class MvpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -13,8 +14,8 @@ class MvpActivity : AppCompatActivity() {
             .beginTransaction()
             .replace(
                 R.id.fragment_container,
-                TodoFragment(),
-                "TodoFragment"
+                TodoFragment.newInstance(),
+                FRAG_ID
             ).commit()
     }
 }

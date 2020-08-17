@@ -13,13 +13,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.distillery.android.ui.databinding.ItemTodoBinding
 import kotlinx.android.extensions.LayoutContainer
 
-@Suppress("VariableNaming")
 class TodoListAdapter(
-    private val checkBoxInteraction: CheckBoxInteraction?,
-    private val deleteMarkInteraction: DeleteMarkInteraction?
+    private val checkBoxOnClickListener: CheckBoxOnClickListener?,
+    private val deleteMarkOnClickListener: DeleteMarkOnClickListener?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private val DiffCallback = object : DiffUtil.ItemCallback<ToDoModel>() {
+    private val diffCallback = object : DiffUtil.ItemCallback<ToDoModel>() {
         override fun areItemsTheSame(oldItem: ToDoModel, newItem: ToDoModel): Boolean =
             oldItem.uniqueId == newItem.uniqueId
 
@@ -30,7 +29,7 @@ class TodoListAdapter(
     // A custom config and a ListUpdateCallback to dispatch updates to
     private val differ = AsyncListDiffer(
         ToDoRecyclerChangeCallback(this),
-        AsyncDifferConfig.Builder(DiffCallback).build()
+        AsyncDifferConfig.Builder(diffCallback).build()
     )
 
     internal inner class ToDoRecyclerChangeCallback(
@@ -63,8 +62,8 @@ class TodoListAdapter(
         )
         return TodoViewHolder(
             itemBinding,
-            checkBoxInteraction,
-            deleteMarkInteraction
+            checkBoxOnClickListener,
+            deleteMarkOnClickListener
         )
     }
 
@@ -88,8 +87,8 @@ class TodoListAdapter(
     class TodoViewHolder
     constructor(
         private val itemTodoBinding: ItemTodoBinding,
-        private val checkBoxInteraction: CheckBoxInteraction?,
-        private val deleteMarkInteraction: DeleteMarkInteraction?
+        private val checkBoxOnClickListener: CheckBoxOnClickListener?,
+        private val deleteMarkOnClickListener: DeleteMarkOnClickListener?
     ) : RecyclerView.ViewHolder(itemTodoBinding.root), LayoutContainer {
         override val containerView: View?
             get() = itemView
@@ -104,20 +103,20 @@ class TodoListAdapter(
                 item.completedAt != null
 
             itemTodoBinding.completedCheckBox.setOnClickListener {
-                checkBoxInteraction?.onClick(item, itemTodoBinding.completedCheckBox.isChecked)
+                checkBoxOnClickListener?.onClick(item, itemTodoBinding.completedCheckBox.isChecked)
             }
 
             itemTodoBinding.deleteButton.setOnClickListener {
-                deleteMarkInteraction?.onclick(item)
+                deleteMarkOnClickListener?.onClick(item)
             }
         }
     }
 
-    interface CheckBoxInteraction {
+    interface CheckBoxOnClickListener {
         fun onClick(item: ToDoModel, newState: Boolean)
     }
 
-    interface DeleteMarkInteraction {
-        fun onclick(item: ToDoModel)
+    interface DeleteMarkOnClickListener {
+        fun onClick(item: ToDoModel)
     }
 }

@@ -47,12 +47,12 @@ class TodoFragment : Fragment(),
         binding.todoList.apply {
             layoutManager = LinearLayoutManager(this@TodoFragment.context)
             recyclerPendingAdapter = TodoListAdapter(
-                object : TodoListAdapter.CheckBoxInteraction {
+                object : TodoListAdapter.CheckBoxOnClickListener {
                     override fun onClick(item: ToDoModel, newState: Boolean) =
                         presenter.onClickCheckboxCompletion(item)
                 },
-                object : TodoListAdapter.DeleteMarkInteraction {
-                    override fun onclick(item: ToDoModel) {
+                object : TodoListAdapter.DeleteMarkOnClickListener {
+                    override fun onClick(item: ToDoModel) {
                         presenter.onClickDeleteTask(item)
                     }
                 }
@@ -62,14 +62,14 @@ class TodoFragment : Fragment(),
         binding.completedTodoList.apply {
             layoutManager = LinearLayoutManager(this@TodoFragment.context)
             recyclerDoneAdapter = TodoListAdapter(
-                object : TodoListAdapter.CheckBoxInteraction {
+                object : TodoListAdapter.CheckBoxOnClickListener {
                     override fun onClick(
                         item: ToDoModel,
                         newState: Boolean
                     ) = Unit
                 },
-                object : TodoListAdapter.DeleteMarkInteraction {
-                    override fun onclick(item: ToDoModel) {
+                object : TodoListAdapter.DeleteMarkOnClickListener {
+                    override fun onClick(item: ToDoModel) {
                         presenter.onClickDeleteTask(item)
                     }
                 }
