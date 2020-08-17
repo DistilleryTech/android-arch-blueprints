@@ -25,7 +25,7 @@ import kotlin.properties.Delegates
 
 private val TAG = "TodoPresenter"
 
-class Presenter(
+class PresenterImplementation(
     private val lifecycleOwner: LifecycleOwner,
     private val view: TodoContract.View
 ) : LifecycleObserver, KoinComponent, CoroutineScope,

@@ -10,7 +10,7 @@ import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
 import com.distillery.android.domain.models.ToDoModel
 import com.distillery.android.ui.databinding.FragmentTodoBinding
 import kotlinx.coroutines.InternalCoroutinesApi
-import main.presenter.Presenter
+import main.presenter.PresenterImplementation
 
 class TodoFragment : Fragment(),
     TodoContract.View
@@ -80,13 +80,13 @@ class TodoFragment : Fragment(),
         binding.buttonAdd.setOnClickListener {
             presenter.onClickAddTask()
         }
-        val localPresenterWithPresenterAndViewContracts = Presenter(
+        val presenterImpl = PresenterImplementation(
             this,
             this
         )
-        this.presenter = localPresenterWithPresenterAndViewContracts
+        this.presenter = presenterImpl
 
-        lifecycle.addObserver(localPresenterWithPresenterAndViewContracts)
+        lifecycle.addObserver(presenterImpl)
     }
 
     override fun onDestroyView() {
