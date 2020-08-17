@@ -26,8 +26,6 @@ import kotlin.properties.Delegates
 private val TAG = "TodoPresenter"
 
 class Presenter(
-    private val todoPendingListAdapter: TodoListAdapter,
-    private val todoDoneListAdapter: TodoListAdapter,
     private val lifecycleOwner: LifecycleOwner,
     private val view: TodoContract.View
 ) : LifecycleObserver, KoinComponent, CoroutineScope,
@@ -35,10 +33,11 @@ class Presenter(
     private val repository: ToDoRepository by inject()
     var todoListAlltypes: List<ToDoModel> by Delegates.observable(listOf()) { _, _, newValue ->
 
-        todoPendingListAdapter.submitList(
-            newValue.filter { item -> item.completedAt == null }
+        view.showPendingTasks(
+            newValue.filter { item -> item.completedAt ==  null }
         )
-        todoDoneListAdapter.submitList(
+
+        view.showDoneTasks(
             newValue.filter { item -> item.completedAt != null }
         )
     }

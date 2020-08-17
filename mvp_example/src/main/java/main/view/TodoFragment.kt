@@ -21,6 +21,7 @@ class TodoFragment : Fragment(),
     private lateinit var recyclerPendingAdapter: TodoListAdapter
     private lateinit var recyclerDoneAdapter: TodoListAdapter
     private lateinit var presenter: TodoContract.Presenter
+    private lateinit var view: TodoContract.View
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -80,9 +81,8 @@ class TodoFragment : Fragment(),
             presenter.onClickAddTask()
         }
         val localPresenterWithPresenterAndViewContracts = Presenter(
-            recyclerPendingAdapter,
-            recyclerDoneAdapter,
-            this,this
+            this,
+            this
         )
         this.presenter = localPresenterWithPresenterAndViewContracts
 
@@ -108,9 +108,11 @@ class TodoFragment : Fragment(),
     @Suppress("EmptyFunctionBlock")
     override fun notifyTaskDeleted() { }
 
-    @Suppress("EmptyFunctionBlock")
-    override fun showPendingTasks(tasks: List<ToDoModel>) { }
+    override fun showPendingTasks(tasks: List<ToDoModel>) {
+        recyclerPendingAdapter.submitList(tasks)
+    }
 
-    @Suppress("EmptyFunctionBlock")
-    override fun showDoneTasks(tasks: List<ToDoModel>) { }
+    override fun showDoneTasks(tasks: List<ToDoModel>) {
+        recyclerDoneAdapter.submitList(tasks)
+    }
 }
