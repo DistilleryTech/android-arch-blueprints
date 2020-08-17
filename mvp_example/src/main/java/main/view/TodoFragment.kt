@@ -79,14 +79,14 @@ class TodoFragment : Fragment(),
         binding.buttonAdd.setOnClickListener {
             presenter.onClickAddTask()
         }
-        val presenter = Presenter(
+        val localPresenterWithPresenterAndViewContracts = Presenter(
             recyclerPendingAdapter,
             recyclerDoneAdapter,
             this,this
         )
-        this.presenter = presenter
+        this.presenter = localPresenterWithPresenterAndViewContracts
 
-        lifecycle.addObserver(presenter)
+        lifecycle.addObserver(localPresenterWithPresenterAndViewContracts)
     }
 
     override fun onDestroyView() {
