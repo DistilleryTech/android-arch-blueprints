@@ -72,14 +72,10 @@ class PresenterImplementation(
                 .catch {
                     withContext(Dispatchers.Main) {
                         when (this@catch) {
-                            is IllegalArgumentException -> {
+                            is IllegalArgumentException ->
                                 view.showError("Cheating death!")
-                                Log.d(TAG, "Cheating death!")
-                            }
-                            else -> {
+                            else ->
                                 view.showError("Unknown exception")
-                                Log.d(TAG, "Unknown exception")
-                            }
                         }
                     }
                 }
