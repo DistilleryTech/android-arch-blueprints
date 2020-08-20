@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
 import com.distillery.android.domain.models.ToDoModel
 import com.distillery.android.ui.databinding.FragmentTodoBinding
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.InternalCoroutinesApi
 import main.presenter.PresenterImplementation
 
@@ -21,7 +22,6 @@ class TodoFragment : Fragment(),
     private lateinit var recyclerPendingAdapter: TodoListAdapter
     private lateinit var recyclerDoneAdapter: TodoListAdapter
     private lateinit var presenter: TodoContract.Presenter
-    private lateinit var view: TodoContract.View
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -103,7 +103,10 @@ class TodoFragment : Fragment(),
     }
 
     @Suppress("EmptyFunctionBlock")
-    override fun showError(message: String) { }
+    override fun showError(message: String) {
+        Snackbar.make(binding.bar, message, Snackbar.LENGTH_SHORT)
+            .show()
+    }
 
     @Suppress("EmptyFunctionBlock")
     override fun notifyTaskDeleted() { }
