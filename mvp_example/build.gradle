@@ -41,6 +41,15 @@ dependencies {
     implementation libraries.koin.core
     implementation libraries.koin.coreExt
     implementation libraries.koin.viewModel
+    api libraries.koin.android
+    api libraries.koin.viewModel
+
+    // Unit tests
+    testImplementation libraries.test.junit
+    testImplementation libraries.test.mockito
+    testImplementation libraries.test.kotlinCoroutines
+    testImplementation libraries.test.koin
+    testImplementation libraries.koin.test
 
     // Unit tests
     testImplementation libraries.test.junit
