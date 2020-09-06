@@ -1,8 +1,6 @@
 package com.distillery.android.blueprints.mvvm.todo.utils
 
 import com.distillery.android.blueprints.mvvm.todo.viewmodel.TodoListViewModel
-import com.distillery.android.domain.FakeToDoRepository
-import com.distillery.android.domain.ToDoRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,7 +15,6 @@ val mvvmModule = module {
         val errorHandler = get<AppErrorHandler>()
         CoroutineScope(Dispatchers.IO + Job() + errorHandler.unCaughtExceptionHandler)
     }
-    single<ToDoRepository>(named(TAG)) { FakeToDoRepository(get(named(TAG))) }
     single { AppErrorHandler() }
     viewModel { TodoListViewModel(get(named(TAG)), get()) }
 }
