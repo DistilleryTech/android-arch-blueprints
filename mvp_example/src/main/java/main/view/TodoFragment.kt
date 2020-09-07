@@ -23,15 +23,13 @@ class TodoFragment : Fragment(),
     private lateinit var recyclerPendingAdapter: TodoListAdapter
     private lateinit var recyclerDoneAdapter: TodoListAdapter
     private lateinit var presenter: TodoContract.Presenter
-    private lateinit var view: TodoContract.View
-    val presenterImpl: TodoContract.Presenter by inject { parametersOf(this, view) }
+    val presenterImpl: TodoContract.Presenter by inject { parametersOf(this, this) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        view = this
         _binding = FragmentTodoBinding.inflate(
             inflater,
             container,
@@ -84,7 +82,7 @@ class TodoFragment : Fragment(),
         binding.buttonAdd.setOnClickListener {
             presenter.onClickAddTask()
         }
-        val presenterImpl: TodoContract.Presenter by inject { parametersOf(this, this) }
+        //val presenterImpl: TodoContract.Presenter by inject { parametersOf(this, this) }
         this.presenter = presenterImpl
 
         lifecycle.addObserver(presenterImpl as LifecycleObserver)
