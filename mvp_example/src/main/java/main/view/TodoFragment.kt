@@ -1,20 +1,22 @@
 package main.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleObserver
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
 import com.distillery.android.domain.models.ToDoModel
 import com.distillery.android.ui.databinding.FragmentTodoBinding
 import kotlinx.coroutines.InternalCoroutinesApi
-import main.presenter.PresenterImplementation
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 
 class TodoFragment : Fragment(),
-    TodoContract.View
-{
+    TodoContract.View {
     private var _binding: FragmentTodoBinding? = null
     private val binding get() = _binding!!
 
@@ -22,12 +24,14 @@ class TodoFragment : Fragment(),
     private lateinit var recyclerDoneAdapter: TodoListAdapter
     private lateinit var presenter: TodoContract.Presenter
     private lateinit var view: TodoContract.View
+    val presenterImpl: TodoContract.Presenter by inject { parametersOf(this, view) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        view = this
         _binding = FragmentTodoBinding.inflate(
             inflater,
             container,
@@ -80,13 +84,10 @@ class TodoFragment : Fragment(),
         binding.buttonAdd.setOnClickListener {
             presenter.onClickAddTask()
         }
-        val presenterImpl = PresenterImplementation(
-            this,
-            this
-        )
+        val presenterImpl: TodoContract.Presenter by inject { parametersOf(this, this) }
         this.presenter = presenterImpl
 
-        lifecycle.addObserver(presenterImpl)
+        lifecycle.addObserver(presenterImpl as LifecycleObserver)
     }
 
     override fun onDestroyView() {
@@ -103,7 +104,9 @@ class TodoFragment : Fragment(),
     }
 
     @Suppress("EmptyFunctionBlock")
-    override fun showError(message: String) { }
+    override fun showError(message: String) {
+        Log.e(TAG, message)
+    }
 
     @Suppress("EmptyFunctionBlock")
     override fun notifyTaskDeleted() { }

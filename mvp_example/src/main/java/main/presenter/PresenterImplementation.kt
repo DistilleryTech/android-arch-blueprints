@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import main.view.TodoListAdapter
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import kotlin.coroutines.CoroutineContext
@@ -29,7 +28,7 @@ class PresenterImplementation(
     private val lifecycleOwner: LifecycleOwner,
     private val view: TodoContract.View
 ) : LifecycleObserver, KoinComponent, CoroutineScope,
-    TodoContract.Presenter{
+    TodoContract.Presenter {
     private val repository: ToDoRepository by inject()
     var todoListAlltypes: List<ToDoModel> by Delegates.observable(listOf()) { _, _, newValue ->
 
@@ -44,11 +43,8 @@ class PresenterImplementation(
 
     private val job = Job()
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        launch(Dispatchers.Main + Job()) {
-            Log.d(TAG, "Error: ${throwable.message!!}")
-            throwable.printStackTrace()
-            view.showError(throwable.message ?: "Undefined error")
-        }
+        Log.d(TAG, "Error: ${throwable.message!!}")
+        throwable.printStackTrace()
     }
     override val coroutineContext: CoroutineContext = job + Dispatchers.IO + coroutineExceptionHandler
 
@@ -74,9 +70,11 @@ class PresenterImplementation(
                         when (this@catch) {
                             is IllegalArgumentException -> {
                                 Log.d(TAG, "Cheating death!")
+                                view.showError(it.message ?: "Undefined error")
                             }
                             else -> {
                                 Log.d(TAG, "Unknown exception")
+                                view.showError(it.message ?: "Undefined error")
                             }
                         }
                     }
