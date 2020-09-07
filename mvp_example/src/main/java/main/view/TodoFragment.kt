@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
 import com.distillery.android.domain.models.ToDoModel
+import com.distillery.android.mvp_example.R
 import com.distillery.android.ui.databinding.FragmentTodoBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -103,8 +104,14 @@ class TodoFragment : Fragment(),
     }
 
     @Suppress("EmptyFunctionBlock")
-    override fun showError(message: String) {
-        Snackbar.make(binding.bar, message, Snackbar.LENGTH_SHORT)
+    override fun showError(message: Int) {
+
+        val errMsg = when (message){
+            R.id.cheating_dead -> "Cheating death!"
+            else -> "Undefined error"
+        }
+
+        Snackbar.make(binding.bar, errMsg, Snackbar.LENGTH_SHORT)
             .show()
     }
 
