@@ -62,6 +62,7 @@ class PresenterImplementation(
     }
 
     @InternalCoroutinesApi
+    @Suppress("LongMethod")
     fun startFlow() {
         launch {
             repository.fetchToDos()
