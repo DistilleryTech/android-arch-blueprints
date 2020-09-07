@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 apply from: 'config.gradle'
 
 android {
@@ -32,6 +33,9 @@ android {
             crunchPngs false
         }
     }
+    buildFeatures {
+        viewBinding = true
+    }
     compileOptions {
         sourceCompatibility versions.platform.java
         targetCompatibility versions.platform.java
@@ -50,6 +54,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation project(path: ':data')
     implementation project(path: ':domain')
     implementation project(path: ':mvi')
     implementation project(path: ':mvi_example')
@@ -60,6 +65,13 @@ dependencies {
 
     // Platform libraries
     implementation libraries.platform.kotlinStdLib
+    implementation libraries.platform.kotlinCoroutines
+    implementation libraries.platform.kotlinCoroutinesAndroid
+
+    // Room
+    implementation libraries.persistence.roomRuntime
+    implementation libraries.persistence.roomKtx
+    kapt libraries.persistence.roomCompiler
 
     // Android libraries
     implementation libraries.android.core
@@ -68,4 +80,9 @@ dependencies {
 
     // Unit tests
     testImplementation libraries.test.junit
+
+    // Koin
+    implementation libraries.koin.android
+    implementation libraries.koin.viewModel
+    testImplementation libraries.koin.test
 }

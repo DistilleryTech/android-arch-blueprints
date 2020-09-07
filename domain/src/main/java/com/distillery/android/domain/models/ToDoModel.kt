@@ -30,3 +30,5 @@ data class ToDoModel(
      */
     val completedAt: Date? = null
 ) : Parcelable
+
+val ToDoModel.isCompleted get() = completedAt != null

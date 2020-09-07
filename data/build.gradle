@@ -1,0 +1,36 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion versions.platform.compileSdk
+
+    defaultConfig {
+        minSdkVersion versions.platform.minSdk
+        targetSdkVersion versions.platform.targetSdk
+        vectorDrawables.useSupportLibrary = true
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(path: ':domain')
+    // Platform libraries
+    implementation libraries.platform.kotlinStdLib
+    implementation libraries.platform.kotlinCoroutines
+    // Room
+    implementation libraries.persistence.roomRuntime
+    implementation libraries.persistence.roomKtx
+    kapt libraries.persistence.roomCompiler
+
+    // Android libraries
+    implementation libraries.android.core
+    implementation libraries.android.supportAppCompat
+    implementation libraries.android.supportConstraintLayout
+
+    // Unit tests
+    testImplementation libraries.test.kotlinCoroutines
+    testImplementation libraries.test.jupiterApi
+    testRuntimeOnly libraries.test.jupiterEngine
+}

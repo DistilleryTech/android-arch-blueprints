@@ -25,5 +25,7 @@ dependencies {
     implementation libraries.android.supportConstraintLayout
 
     // Unit tests
-    testImplementation libraries.test.junit
+    testImplementation libraries.test.kotlinCoroutines
+    testImplementation libraries.test.jupiterApi
+    testRuntimeOnly libraries.test.jupiterEngine
 }

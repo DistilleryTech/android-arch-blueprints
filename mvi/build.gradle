@@ -20,6 +20,8 @@ dependencies {
 
     // Platform libraries
     implementation libraries.platform.kotlinStdLib
+    implementation libraries.platform.kotlinCoroutines
+    implementation libraries.platform.kotlinCoroutinesAndroid
 
     // Android libraries
     implementation libraries.android.core

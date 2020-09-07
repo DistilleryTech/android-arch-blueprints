@@ -1,0 +1,33 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion versions.platform.compileSdk
+
+    defaultConfig {
+        minSdkVersion versions.platform.minSdk
+        targetSdkVersion versions.platform.targetSdk
+        vectorDrawables.useSupportLibrary = true
+    }
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Platform libraries
+    implementation libraries.platform.kotlinStdLib
+
+    // Android libraries
+    implementation libraries.android.core
+    implementation libraries.android.supportAppCompat
+    implementation libraries.android.supportConstraintLayout
+    implementation libraries.android.supportRecyclerView
+    implementation libraries.android.material
+
+    implementation project(path: ':domain')
+}

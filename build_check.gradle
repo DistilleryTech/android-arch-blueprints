@@ -15,7 +15,8 @@ task allTests() {
             ":mvp_example:testDebugUnitTest",
             ":mvvm:testDebugUnitTest",
             ":mvvm_example:testDebugUnitTest",
-            ":domain:testDebugUnitTest"
+            ":domain:testDebugUnitTest",
+            ":ui:testDebugUnitTest"
     ]
 }
 
@@ -31,6 +32,7 @@ task staticCheck() {
             ':mvvm:lintRelease',
             ':mvvm_example:lintRelease',
             ':domain:lintRelease',
+            ':ui:lintRelease',
 
             "checkstyle",
             "detekt",

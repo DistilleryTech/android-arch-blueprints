@@ -1,1 +1,14 @@
-<manifest package="com.distillery.android.mvvm_example" />
+<manifest
+    package="com.distillery.android.mvvm_example"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity
+            android:label="@string/mvvm_app_name"
+            android:launchMode="singleTask"
+            android:name="com.distillery.android.blueprints.mvvm.MvvmActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            />
+    </application>
+</manifest>

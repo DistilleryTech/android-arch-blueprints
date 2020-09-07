@@ -11,6 +11,7 @@ task checkstyle(type: Checkstyle) {
     source 'mvvm/src/'
     source 'mvvm_example/src/'
     source 'domain/src/'
+    source 'ui/src/'
 
     include '**/*.java'
     exclude '**/gen/**'
