@@ -1,6 +1,5 @@
 package main.presenter
 
-import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -8,7 +7,6 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
 import com.distillery.android.domain.ToDoRepository
 import com.distillery.android.domain.models.ToDoModel
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,7 +17,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
 
 private val TAG = "TodoPresenter"
@@ -27,9 +24,12 @@ private val TAG = "TodoPresenter"
 class PresenterImplementation(
     private val lifecycleOwner: LifecycleOwner,
     private val view: TodoContract.View
-) : LifecycleObserver, KoinComponent, CoroutineScope,
+) : LifecycleObserver, KoinComponent,
     TodoContract.Presenter {
     private val repository: ToDoRepository by inject()
+    private val job: Job by inject()
+    val coroutineScope: CoroutineScope by inject()
+
     var todoListAlltypes: List<ToDoModel> by Delegates.observable(listOf()) { _, _, newValue ->
 
         view.showPendingTasks(
@@ -40,13 +40,6 @@ class PresenterImplementation(
             newValue.filter { item -> item.completedAt != null }
         )
     }
-
-    private val job = Job()
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        Log.d(TAG, "Error: ${throwable.message!!}")
-        throwable.printStackTrace()
-    }
-    override val coroutineContext: CoroutineContext = job + Dispatchers.IO + coroutineExceptionHandler
 
     @InternalCoroutinesApi
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -64,17 +57,15 @@ class PresenterImplementation(
     @InternalCoroutinesApi
     @Suppress("LongMethod")
     fun startFlow() {
-        launch {
+        coroutineScope.launch {
             repository.fetchToDos()
                 .catch {
                     withContext(Dispatchers.Main) {
                         when (this@catch) {
                             is IllegalArgumentException -> {
-                                Log.d(TAG, "Cheating death!")
                                 view.showError(it.message ?: "Undefined error")
                             }
                             else -> {
-                                Log.d(TAG, "Unknown exception")
                                 view.showError(it.message ?: "Undefined error")
                             }
                         }
@@ -94,14 +85,14 @@ class PresenterImplementation(
 
     @InternalCoroutinesApi
     override fun onClickDeleteTask(item: ToDoModel) {
-        launch {
+        coroutineScope.launch {
             repository.deleteToDo(item.uniqueId)
         }
     }
 
     @InternalCoroutinesApi
     override fun onClickAddTask() {
-        launch {
+        coroutineScope.launch {
             repository.addToDo("Title", "Description")
         }
     }

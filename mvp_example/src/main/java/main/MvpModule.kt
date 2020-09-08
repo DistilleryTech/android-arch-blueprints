@@ -17,11 +17,12 @@ import org.koin.dsl.module
 @ExperimentalCoroutinesApi
 val mvpModule = module {
     factory(named(TAG)) {
+        val job = Job()
         val errorHandler = CoroutineExceptionHandler { _, throwable ->
             Log.d(TAG, "Error: ${throwable.message!!}")
             throwable.printStackTrace()
         }
-        CoroutineScope(Dispatchers.IO + Job() + errorHandler)
+        CoroutineScope(Dispatchers.IO + job + errorHandler)
     }
     single<ToDoRepository>(named(TAG)) { FakeToDoRepository(get(named(TAG))) }
     single<TodoContract.Presenter> { (lifecycleOwner: LifecycleOwner, view: TodoContract.View) ->
