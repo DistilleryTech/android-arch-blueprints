@@ -8,6 +8,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
 import com.distillery.android.domain.ToDoRepository
 import com.distillery.android.domain.models.ToDoModel
+import com.distillery.android.mvp_example.R
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +48,7 @@ class PresenterImplementation(
         launch(Dispatchers.Main + Job()) {
             Log.d(TAG, "Error: ${throwable.message!!}")
             throwable.printStackTrace()
-            view.showError(throwable.message ?: "Undefined error")
+            view.showError(R.string.error_undefined)
         }
     }
     override val coroutineContext: CoroutineContext = job + Dispatchers.IO + coroutineExceptionHandler
@@ -72,12 +73,10 @@ class PresenterImplementation(
                 .catch {
                     withContext(Dispatchers.Main) {
                         when (this@catch) {
-                            is IllegalArgumentException -> {
-                                Log.d(TAG, "Cheating death!")
-                            }
-                            else -> {
-                                Log.d(TAG, "Unknown exception")
-                            }
+                            is IllegalArgumentException ->
+                                view.showError(R.string.error_cheating)
+                            else ->
+                                view.showError(R.string.error_undefined)
                         }
                     }
                 }

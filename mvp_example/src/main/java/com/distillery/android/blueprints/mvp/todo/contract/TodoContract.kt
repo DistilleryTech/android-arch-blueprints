@@ -4,7 +4,7 @@ import com.distillery.android.domain.models.ToDoModel
 
 interface TodoContract {
     interface View {
-        fun showError(message: String)
+        fun showError(message: Int)
         fun notifyTaskDeleted()
         fun showPendingTasks(tasks: List<ToDoModel>)
         fun showDoneTasks(tasks: List<ToDoModel>)
