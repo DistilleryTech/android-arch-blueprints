@@ -101,8 +101,7 @@ class TodoFragment : Fragment(),
         @JvmStatic
         fun newInstance() = TodoFragment()
     }
-
-    @Suppress("EmptyFunctionBlock")
+    
     override fun showError(message: Int) {
         Snackbar.make(binding.bar, getString(message), Snackbar.LENGTH_SHORT)
             .show()
