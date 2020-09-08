@@ -48,7 +48,7 @@ class PresenterImplementation(
         launch(Dispatchers.Main + Job()) {
             Log.d(TAG, "Error: ${throwable.message!!}")
             throwable.printStackTrace()
-            view.showError(R.id.undefined_error)
+            view.showError(R.string.error_undefined)
         }
     }
     override val coroutineContext: CoroutineContext = job + Dispatchers.IO + coroutineExceptionHandler
@@ -74,9 +74,9 @@ class PresenterImplementation(
                     withContext(Dispatchers.Main) {
                         when (this@catch) {
                             is IllegalArgumentException ->
-                                view.showError(R.id.cheating_dead)
+                                view.showError(R.string.error_cheating)
                             else ->
-                                view.showError(R.id.undefined_error)
+                                view.showError(R.string.error_undefined)
                         }
                     }
                 }

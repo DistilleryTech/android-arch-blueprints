@@ -1,8 +1,0 @@
-<resources>
-    <item
-        type="id"
-        name="undefined_error" />
-    <item
-        type="id"
-        name="cheating_dead" />
-</resources>
