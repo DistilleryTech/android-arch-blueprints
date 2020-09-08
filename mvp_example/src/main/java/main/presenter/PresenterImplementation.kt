@@ -7,6 +7,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
 import com.distillery.android.domain.ToDoRepository
 import com.distillery.android.domain.models.ToDoModel
+import com.distillery.android.mvp_example.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -55,19 +56,16 @@ class PresenterImplementation(
     }
 
     @InternalCoroutinesApi
-    @Suppress("LongMethod")
     fun startFlow() {
         coroutineScope.launch {
             repository.fetchToDos()
                 .catch {
                     withContext(Dispatchers.Main) {
                         when (this@catch) {
-                            is IllegalArgumentException -> {
-                                view.showError(it.message ?: "Undefined error")
-                            }
-                            else -> {
-                                view.showError(it.message ?: "Undefined error")
-                            }
+                            is IllegalArgumentException ->
+                                view.showError(R.string.error_cheating)
+                            else ->
+                                view.showError(R.string.error_undefined)
                         }
                     }
                 }

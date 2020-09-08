@@ -1,7 +1,6 @@
 package main.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
 import com.distillery.android.domain.models.ToDoModel
 import com.distillery.android.ui.databinding.FragmentTodoBinding
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.InternalCoroutinesApi
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
@@ -82,7 +82,6 @@ class TodoFragment : Fragment(),
         binding.buttonAdd.setOnClickListener {
             presenter.onClickAddTask()
         }
-        //val presenterImpl: TodoContract.Presenter by inject { parametersOf(this, this) }
         this.presenter = presenterImpl
 
         lifecycle.addObserver(presenterImpl as LifecycleObserver)
@@ -101,9 +100,9 @@ class TodoFragment : Fragment(),
         fun newInstance() = TodoFragment()
     }
 
-    @Suppress("EmptyFunctionBlock")
-    override fun showError(message: String) {
-        Log.e(TAG, message)
+    override fun showError(message: Int) {
+        Snackbar.make(binding.bar, getString(message), Snackbar.LENGTH_SHORT)
+            .show()
     }
 
     @Suppress("EmptyFunctionBlock")

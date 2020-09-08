@@ -16,11 +16,14 @@ class BluePrintsApplication : Application() {
         startKoin {
             androidLogger(Level.INFO)
             androidContext(this@BluePrintsApplication)
-            modules(listOf(
+            modules(
+                listOf(
+                    domainModule,
                     mvvmModule,
                     mviModule,
                     mvpModule
-            ))
+                )
+            )
         }
     }
 }

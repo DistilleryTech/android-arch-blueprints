@@ -3,8 +3,6 @@ package main
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
-import com.distillery.android.domain.FakeToDoRepository
-import com.distillery.android.domain.ToDoRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +22,6 @@ val mvpModule = module {
         }
         CoroutineScope(Dispatchers.IO + job + errorHandler)
     }
-    single<ToDoRepository>(named(TAG)) { FakeToDoRepository(get(named(TAG))) }
     single<TodoContract.Presenter> { (lifecycleOwner: LifecycleOwner, view: TodoContract.View) ->
         PresenterImplementation(lifecycleOwner, view)
     }
