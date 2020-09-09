@@ -18,7 +18,7 @@ val mvpModule = module {
         val job = Job()
         val errorHandler = CoroutineExceptionHandler { _, throwable ->
             Log.d(TAG, "Error: ${throwable.message!!}")
-            throwable.printStackTrace()
+            throw throwable
         }
         CoroutineScope(Dispatchers.IO + job + errorHandler)
     }
