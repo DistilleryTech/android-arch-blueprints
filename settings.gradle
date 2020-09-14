@@ -1,3 +1,4 @@
+include ':ui-compose'
 include ':data'
 rootProject.name='Distillery Android Architecture Blueprints'
 include ':app'
