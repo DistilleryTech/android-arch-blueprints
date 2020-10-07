@@ -1,7 +1,5 @@
 package main.view
 
-import com.distillery.android.domain.models.ToDoModel
-
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +8,7 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
 import androidx.recyclerview.widget.RecyclerView
+import com.distillery.android.domain.models.ToDoModel
 import com.distillery.android.ui.databinding.ItemTodoBinding
 import kotlinx.android.extensions.LayoutContainer
 
@@ -18,6 +17,7 @@ class TodoListAdapter(
     private val deleteMarkOnClickListener: DeleteMarkOnClickListener?
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    // TODO move to separate class
     private val diffCallback = object : DiffUtil.ItemCallback<ToDoModel>() {
         override fun areItemsTheSame(oldItem: ToDoModel, newItem: ToDoModel): Boolean =
             oldItem.uniqueId == newItem.uniqueId
@@ -26,12 +26,14 @@ class TodoListAdapter(
             oldItem == newItem
     }
 
+    // TODO move creation to separate class
     // A custom config and a ListUpdateCallback to dispatch updates to
     private val differ = AsyncListDiffer(
         ToDoRecyclerChangeCallback(this),
         AsyncDifferConfig.Builder(diffCallback).build()
     )
 
+    // TODO move to separate class
     internal inner class ToDoRecyclerChangeCallback(
         private val adapter: TodoListAdapter
     ) : ListUpdateCallback {
@@ -69,9 +71,8 @@ class TodoListAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is TodoViewHolder -> {
-                holder.bind(differ.currentList[position])
-            }
+            is TodoViewHolder -> holder.bind(differ.currentList[position])
+            else -> TODO("cover edge cases")
         }
     }
 
@@ -84,6 +85,7 @@ class TodoListAdapter(
         differ.submitList(list)
     }
 
+    // TODO move view holder to separate class
     class TodoViewHolder
     constructor(
         private val itemTodoBinding: ItemTodoBinding,
@@ -93,14 +95,18 @@ class TodoListAdapter(
         override val containerView: View?
             get() = itemView
 
+        // TODO check if `with(itemView)` is required here
         fun bind(item: ToDoModel) = with(itemView) {
             itemTodoBinding.descriptionTextView.text = item.description
             itemTodoBinding.titleTextView.text = item.title
+            // TODO if checks are logic, adapter is a bad place for logic
+            //   create UI model that only contains display data and just show it as is
+            //   Example: itemTodoBinding.completedCheckBox.setVisible(item.displayCompleted)
+            //   where setVisible is extension and displayCompleted is boolean
             if (item.completedAt != null) {
                 itemTodoBinding.completedCheckBox.visibility = View.GONE
             }
-            itemTodoBinding.completedCheckBox.isChecked =
-                item.completedAt != null
+            itemTodoBinding.completedCheckBox.isChecked = item.completedAt != null
 
             itemTodoBinding.completedCheckBox.setOnClickListener {
                 checkBoxOnClickListener?.onClick(item, itemTodoBinding.completedCheckBox.isChecked)

@@ -8,39 +8,48 @@ import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
 import com.distillery.android.domain.ToDoRepository
 import com.distillery.android.domain.models.ToDoModel
 import com.distillery.android.mvp_example.R
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
 
-private val TAG = "TodoPresenter"
+private const val TAG = "TodoPresenter"
 
+// TODO cover with tests
 class PresenterImplementation(
+    // TODO make view implement it and add method to the interface
     private val lifecycleOwner: LifecycleOwner,
     private val view: TodoContract.View
-) : LifecycleObserver, KoinComponent,
+) : LifecycleObserver, KoinComponent, CoroutineScope,
     TodoContract.Presenter {
     private val repository: ToDoRepository by inject()
-    private val job: Job by inject()
-    val coroutineScope: CoroutineScope by inject()
-
-    var todoListAlltypes: List<ToDoModel> by Delegates.observable(listOf()) { _, _, newValue ->
-
+    private val errorHandler: CoroutineExceptionHandler by inject()
+    // TODO use usual set logic, this kind of handling is not obvious and error prone
+    private var todoListAllTypes: List<ToDoModel> by Delegates.observable(listOf()) { _, _, newValue ->
         view.showPendingTasks(
-            newValue.filter { item -> item.completedAt ==  null }
+            newValue.filter { item -> item.completedAt == null }
         )
 
         view.showDoneTasks(
             newValue.filter { item -> item.completedAt != null }
         )
     }
+
+    private val job = Job()
+    private val coroutineScope: CoroutineScope by inject()
+    // TODO (D.Balasundaram, 07.09.2020): I would recommend DI for the coroutine context,
+    //  it's easier to test in that way
+    override val coroutineContext: CoroutineContext =
+        job + Dispatchers.IO + errorHandler
 
     @InternalCoroutinesApi
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -57,40 +66,37 @@ class PresenterImplementation(
 
     @InternalCoroutinesApi
     fun startFlow() {
-        coroutineScope.launch {
+        coroutineScope.launch(errorHandler) {
             repository.fetchToDos()
-                .catch {
-                    withContext(Dispatchers.Main) {
-                        when (this@catch) {
-                            is IllegalArgumentException ->
-                                view.showError(R.string.error_cheating)
-                            else ->
-                                view.showError(R.string.error_undefined)
-                        }
-                    }
-                }
                 .collect {
+                    // TODO move happy handling to another place, keep same level of abstraction
+                    //  Q (A.Rudometkin, 30.09.2020): Does it really matter? Seems like we simply apply the new list
                     withContext(Dispatchers.Main) {
-                        todoListAlltypes = it
+                        todoListAllTypes = it
                     }
                 }
         }
     }
 
     override fun onClickCheckboxCompletion(item: ToDoModel) {
-        repository.completeToDo(item.uniqueId)
+        // TODO display operation is progress or smth
+        coroutineScope.launch(errorHandler) {
+            repository.completeToDo(item.uniqueId)
+        }
     }
 
     @InternalCoroutinesApi
     override fun onClickDeleteTask(item: ToDoModel) {
-        coroutineScope.launch {
+        // TODO display operation is progress or smth
+        coroutineScope.launch(errorHandler) {
             repository.deleteToDo(item.uniqueId)
         }
     }
 
     @InternalCoroutinesApi
     override fun onClickAddTask() {
-        coroutineScope.launch {
+        // TODO display operation is progress or smth
+        coroutineScope.launch(errorHandler) {
             repository.addToDo("Title", "Description")
         }
     }

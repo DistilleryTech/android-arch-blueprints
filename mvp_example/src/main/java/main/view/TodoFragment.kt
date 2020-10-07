@@ -15,15 +15,30 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import org.koin.android.ext.android.inject
 import org.koin.core.parameter.parametersOf
 
-class TodoFragment : Fragment(),
-    TodoContract.View {
+class TodoFragment : Fragment(), TodoContract.View {
     private var _binding: FragmentTodoBinding? = null
     private val binding get() = _binding!!
 
+    // TODO adapters are not required to be variables, access through recycler view
+    //  Q (A.Rudometkin, 30.09.2020): Does it really matter? Seems like we use their interface below
     private lateinit var recyclerPendingAdapter: TodoListAdapter
     private lateinit var recyclerDoneAdapter: TodoListAdapter
-    private lateinit var presenter: TodoContract.Presenter
-    val presenterImpl: TodoContract.Presenter by inject { parametersOf(this, this) }
+    private val presenter: TodoContract.Presenter by inject { parametersOf(this, this) }
+
+    private val itemMarkClickListener = object : TodoListAdapter.CheckBoxOnClickListener {
+        override fun onClick(item: ToDoModel, newState: Boolean) =
+                presenter.onClickCheckboxCompletion(item)
+    }
+
+    private val itemDeleteClickListener = object : TodoListAdapter.DeleteMarkOnClickListener {
+        override fun onClick(item: ToDoModel) {
+            presenter.onClickDeleteTask(item)
+        }
+    }
+
+    private val itemEmptyClickListener = object : TodoListAdapter.CheckBoxOnClickListener {
+        override fun onClick(item: ToDoModel, newState: Boolean) = Unit
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,9 +46,9 @@ class TodoFragment : Fragment(),
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentTodoBinding.inflate(
-            inflater,
-            container,
-            false
+                inflater,
+                container,
+                false
         )
         return binding.root
     }
@@ -45,46 +60,30 @@ class TodoFragment : Fragment(),
     }
 
     @InternalCoroutinesApi
-    @Suppress("LongMethod")
     private fun initPendingAndDoneRecyclerViews() {
         binding.todoList.apply {
             layoutManager = LinearLayoutManager(this@TodoFragment.context)
-            recyclerPendingAdapter = TodoListAdapter(
-                object : TodoListAdapter.CheckBoxOnClickListener {
-                    override fun onClick(item: ToDoModel, newState: Boolean) =
-                        presenter.onClickCheckboxCompletion(item)
-                },
-                object : TodoListAdapter.DeleteMarkOnClickListener {
-                    override fun onClick(item: ToDoModel) {
-                        presenter.onClickDeleteTask(item)
-                    }
-                }
-            )
-            adapter = recyclerPendingAdapter
+            adapter = initPendingItemsAdapter()
         }
         binding.completedTodoList.apply {
             layoutManager = LinearLayoutManager(this@TodoFragment.context)
-            recyclerDoneAdapter = TodoListAdapter(
-                object : TodoListAdapter.CheckBoxOnClickListener {
-                    override fun onClick(
-                        item: ToDoModel,
-                        newState: Boolean
-                    ) = Unit
-                },
-                object : TodoListAdapter.DeleteMarkOnClickListener {
-                    override fun onClick(item: ToDoModel) {
-                        presenter.onClickDeleteTask(item)
-                    }
-                }
-            )
-            adapter = recyclerDoneAdapter
+            adapter = initDoneItemsAdapter()
         }
         binding.buttonAdd.setOnClickListener {
             presenter.onClickAddTask()
         }
-        this.presenter = presenterImpl
 
-        lifecycle.addObserver(presenterImpl as LifecycleObserver)
+        lifecycle.addObserver(presenter as LifecycleObserver)
+    }
+
+    private fun initPendingItemsAdapter(): TodoListAdapter {
+        recyclerPendingAdapter = TodoListAdapter(itemMarkClickListener, itemDeleteClickListener)
+        return recyclerPendingAdapter
+    }
+
+    private fun initDoneItemsAdapter(): TodoListAdapter {
+        recyclerDoneAdapter = TodoListAdapter(itemEmptyClickListener, itemDeleteClickListener)
+        return recyclerDoneAdapter
     }
 
     override fun onDestroyView() {
@@ -95,18 +94,16 @@ class TodoFragment : Fragment(),
     }
 
     companion object {
-        private val TAG = TodoFragment::class.qualifiedName ?: "TodoFragment"
         @JvmStatic
         fun newInstance() = TodoFragment()
     }
 
     override fun showError(message: Int) {
         Snackbar.make(binding.bar, getString(message), Snackbar.LENGTH_SHORT)
-            .show()
+                .show()
     }
 
-    @Suppress("EmptyFunctionBlock")
-    override fun notifyTaskDeleted() { }
+    override fun notifyTaskDeleted() = Unit
 
     override fun showPendingTasks(tasks: List<ToDoModel>) {
         recyclerPendingAdapter.submitList(tasks)
