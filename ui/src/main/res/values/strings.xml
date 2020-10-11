@@ -5,6 +5,9 @@
     <string name="cancel">Cancel</string>
     <string name="add">Add</string>
     <string name="delete">Delete</string>
+    <string name="error_message_loading_items">Cannot load items. Please, try again.</string>
+    <string name="error_message_adding_item">Cannot add new item. Please, try again.</string>
+    <string name="error_message_completing_item">Cannot complete item. Please, try again.</string>
     <string name="error_message_unsupported">This operation not Supported</string>
     <string name="error_message_connection_Failed">Could not update Server, Connection Failed</string>
     <string name="error_message_reconnecting">Connection interrupted. reconnecting to Server…</string>

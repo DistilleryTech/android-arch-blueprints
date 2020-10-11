@@ -37,6 +37,7 @@ class ToDoListAdapter(
                     onDeleteClickListener(toDoModel)
                 }
                 completedCheckBox.setDebounceClickListener {
+                    completedCheckBox.isChecked = toDoModel.isCompleted
                     onCompleteClickListener(toDoModel)
                 }
             }

@@ -1,102 +1,99 @@
 package com.distillery.android.blueprints.mvp.todo.contract
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.lifecycleScope
 import com.distillery.android.domain.ToDoRepository
 import com.distillery.android.domain.models.ToDoModel
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import kotlin.coroutines.CoroutineContext
-import kotlin.properties.Delegates
+import java.net.ConnectException
+import java.util.Date
 
-private const val TAG = "TodoPresenter"
-
-// TODO cover with tests
 class TodoPresenter(
     private val view: TodoContract.View
-) : TodoContract.Presenter,
-        LifecycleObserver,
-        KoinComponent,
-        CoroutineScope {
+) : TodoContract.Presenter, KoinComponent {
+
     private val repository: ToDoRepository by inject()
-    private val errorHandler: CoroutineExceptionHandler by inject()
 
-    // TODO use usual set logic, this kind of handling is not obvious and error prone
-    private var todoListAllTypes: List<ToDoModel> by Delegates.observable(listOf()) { _, _, newValue ->
-        view.showPendingTasks(
-                newValue.filter { item -> item.completedAt == null }
-        )
+    private val scope = view.lifecycleScope
 
-        view.showDoneTasks(
-                newValue.filter { item -> item.completedAt != null }
-        )
-    }
+    private var relevantData: List<ToDoModel> = emptyList()
 
-    private val job = Job()
-    private val coroutineScope: CoroutineScope by inject()
-
-    // TODO (D.Balasundaram, 07.09.2020): I would recommend DI for the coroutine context,
-    //  it's easier to test in that way
-    override val coroutineContext: CoroutineContext =
-            job + Dispatchers.IO + errorHandler
-
-    @InternalCoroutinesApi
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun start() {
-        if (view.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-            startFlow()
+    init {
+        scope.launchWhenStarted {
+            view.displayProgress()
+            try {
+                // TODO think about moving context switch to somewhere else. aageychenko 11 Oct 20
+                //   cause that looks kinda ugly
+                withContext(IO) {
+                    repository.fetchToDos()
+                            .collect {
+                                withContext(Main) {
+                                    handleData(it)
+                                }
+                            }
+                }
+            } catch (exception: IllegalArgumentException) {
+                handleError()
+            }
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun stop() {
-        job.cancel()
+    private fun handleError() {
+        view.hideProgress()
+        view.showLoadingError()
     }
 
-    @InternalCoroutinesApi
-    fun startFlow() {
-        coroutineScope.launch(errorHandler) {
-            repository.fetchToDos()
-                    .collect {
-                        // TODO move happy handling to another place, keep same level of abstraction
-                        //  Q (A.Rudometkin, 30.09.2020): Does it really matter? Seems like we simply apply the new list
-                        withContext(Dispatchers.Main) {
-                            todoListAllTypes = it
-                        }
-                    }
-        }
+    private fun handleData(list: List<ToDoModel>) {
+        relevantData = list
+        view.hideProgress()
+        view.displayData(relevantData)
+    }
+
+    private fun TodoContract.View.displayData(list: List<ToDoModel>) {
+        showPendingTasks(list.filter { item -> !item.isCompleted })
+        showDoneTasks(list.filter { item -> item.isCompleted })
     }
 
     override fun onClickCheckboxCompletion(item: ToDoModel) {
-        // TODO display operation is progress or smth
-        coroutineScope.launch(errorHandler) {
-            repository.completeToDo(item.uniqueId)
+        scope.launchWhenStarted {
+            try {
+                withContext(IO) {
+                    repository.completeToDo(item.uniqueId)
+                }
+            } catch (error: UnsupportedOperationException) {
+                view.showCompletingError()
+                view.displayData(relevantData)
+            }
         }
     }
 
-    @InternalCoroutinesApi
     override fun onClickDeleteTask(item: ToDoModel) {
-        // TODO display operation is progress or smth
-        coroutineScope.launch(errorHandler) {
-            repository.deleteToDo(item.uniqueId)
+        scope.launchWhenStarted {
+            view.displayProgress()
+            withContext(IO) {
+                repository.deleteToDo(item.uniqueId)
+            }
+            view.hideProgress()
         }
     }
 
-    @InternalCoroutinesApi
     override fun onClickAddTask() {
-        // TODO display operation is progress or smth
-        coroutineScope.launch(errorHandler) {
-            repository.addToDo("Title", "Description")
+        scope.launchWhenStarted {
+            try {
+                view.displayProgress()
+                withContext(IO) {
+                    repository.addToDo("Title", "Description ${Date().toGMTString()}")
+                }
+            } catch (error: ConnectException) {
+                view.showAddingItemError()
+                view.displayData(relevantData)
+            } finally {
+                view.hideProgress()
+            }
         }
     }
 }

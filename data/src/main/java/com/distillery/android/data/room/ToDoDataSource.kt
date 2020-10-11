@@ -16,7 +16,7 @@ import java.net.ConnectException
 import java.util.Date
 
 @VisibleForTesting
-const val DELAY_FOR_TODO_OPERATION = 1500L
+const val DELAY_FOR_TODO_OPERATION = 3000L
 
 /** Allow to do 5 actions before getting an error */
 private const val RANDOM_NUMBER = 5

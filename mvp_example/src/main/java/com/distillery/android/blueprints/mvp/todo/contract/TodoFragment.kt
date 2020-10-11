@@ -5,14 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleObserver
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.distillery.android.domain.models.ToDoModel
+import com.distillery.android.mvp_example.R
 import com.distillery.android.ui.adapter.ToDoListAdapter
 import com.distillery.android.ui.databinding.FragmentTodoBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.InternalCoroutinesApi
-import org.koin.android.ext.android.inject
+import org.koin.android.ext.android.get
 import org.koin.core.parameter.parametersOf
 
 class TodoFragment : Fragment(), TodoContract.View {
@@ -21,18 +21,15 @@ class TodoFragment : Fragment(), TodoContract.View {
     private val binding get() = _binding!!
     private lateinit var recyclerPendingAdapter: ToDoListAdapter
     private lateinit var recyclerDoneAdapter: ToDoListAdapter
-    private val presenter: TodoContract.Presenter by inject { parametersOf(this, this) }
+
+    private val presenter: TodoContract.Presenter = get { parametersOf(this) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentTodoBinding.inflate(
-                inflater,
-                container,
-                false
-        )
+        _binding = FragmentTodoBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -55,8 +52,6 @@ class TodoFragment : Fragment(), TodoContract.View {
         binding.buttonAdd.setOnClickListener {
             presenter.onClickAddTask()
         }
-
-        lifecycle.addObserver(presenter as LifecycleObserver)
     }
 
     private fun initPendingItemsAdapter(): ToDoListAdapter {
@@ -89,8 +84,18 @@ class TodoFragment : Fragment(), TodoContract.View {
         _binding = null
     }
 
-    override fun showError(message: Int) {
-        Snackbar.make(binding.bar, getString(message), Snackbar.LENGTH_SHORT)
+    override fun showLoadingError() {
+        Snackbar.make(binding.bar, getString(R.string.error_message_loading_items), Snackbar.LENGTH_SHORT)
+                .show()
+    }
+
+    override fun showCompletingError() {
+        Snackbar.make(binding.bar, getString(R.string.error_message_completing_item), Snackbar.LENGTH_SHORT)
+                .show()
+    }
+
+    override fun showAddingItemError() {
+        Snackbar.make(binding.bar, getString(R.string.error_message_adding_item), Snackbar.LENGTH_SHORT)
                 .show()
     }
 
@@ -100,5 +105,13 @@ class TodoFragment : Fragment(), TodoContract.View {
 
     override fun showDoneTasks(tasks: List<ToDoModel>) {
         recyclerDoneAdapter.submitList(tasks)
+    }
+
+    override fun displayProgress() {
+       binding.progressBar.visibility = View.VISIBLE
+    }
+
+    override fun hideProgress() {
+        binding.progressBar.visibility = View.GONE
     }
 }

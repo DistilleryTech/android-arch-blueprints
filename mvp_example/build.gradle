@@ -11,9 +11,15 @@ android {
         targetSdkVersion versions.platform.targetSdk
         vectorDrawables.useSupportLibrary = true
     }
-
     buildFeatures {
-        viewBinding = true
+        viewBinding true
+    }
+    compileOptions {
+        sourceCompatibility versions.platform.java
+        targetCompatibility versions.platform.java
+    }
+    kotlinOptions {
+        jvmTarget = versions.platform.java
     }
 }
 
@@ -27,6 +33,8 @@ dependencies {
 
     // Platform libraries
     implementation libraries.platform.kotlinStdLib
+    implementation libraries.platform.kotlinCoroutines
+    implementation libraries.platform.kotlinCoroutinesAndroid
 
     // Android libraries
     implementation libraries.android.core
@@ -34,6 +42,7 @@ dependencies {
     implementation libraries.android.supportConstraintLayout
     implementation libraries.android.supportRecyclerView
     implementation libraries.android.supportLifecycleViewModel
+    implementation libraries.android.supportLifecycleRuntime
     implementation libraries.android.material
     implementation libraries.android.lifecycle
 
