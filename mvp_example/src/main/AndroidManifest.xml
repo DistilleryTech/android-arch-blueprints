@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.distillery.android.mvp_example">
     <application>
-        <activity android:name="main.MvpActivity"
+        <activity android:name="com.distillery.android.blueprints.mvp.MvpActivity"
             android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar"
             android:label="MVP"
             android:launchMode="singleTask">

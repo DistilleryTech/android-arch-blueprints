@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingEnd="@dimen/todo_item_padding_horizontal"
     android:paddingStart="@dimen/todo_item_padding_horizontal"
-    android:paddingEnd="@dimen/todo_item_padding_horizontal">
-
+    >
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/completedCheckBox"
         android:layout_width="wrap_content"
@@ -14,8 +15,8 @@
         app:layout_constraintBottom_toBottomOf="@id/titleTextView"
         app:layout_constraintEnd_toStartOf="@id/titleTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toTopOf="parent"
+        />
     <TextView
         android:id="@+id/titleTextView"
         android:layout_width="0dp"
@@ -27,23 +28,21 @@
         app:layout_constraintEnd_toStartOf="@id/deleteButton"
         app:layout_constraintStart_toEndOf="@id/completedCheckBox"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Title" />
-
+        tools:text="Title"
+        />
     <ImageButton
         android:id="@+id/deleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:drawable/ic_menu_close_clear_cancel"
-        android:backgroundTint="@color/deleteIcon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        android:background="@null"
         android:contentDescription="@string/delete"
-        android:scaleX="0.7"
-        android:scaleY="0.7"
-        app:iconPadding="0dp"
+        app:iconPadding="8dp"
         app:layout_constraintBottom_toBottomOf="@id/titleTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/titleTextView"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toTopOf="parent"
+        />
     <TextView
         android:id="@+id/descriptionTextView"
         android:layout_width="0dp"
@@ -54,6 +53,6 @@
         app:layout_constraintStart_toStartOf="@id/titleTextView"
         app:layout_constraintTop_toBottomOf="@id/titleTextView"
         app:layout_constraintVertical_bias="1"
-        tools:text="Description" />
-
+        tools:text="Description"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

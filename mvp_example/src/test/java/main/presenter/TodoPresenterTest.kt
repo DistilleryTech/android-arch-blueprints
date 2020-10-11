@@ -1,13 +1,13 @@
 package main.presenter
 
-import androidx.lifecycle.LifecycleOwner
+import com.distillery.android.blueprints.mvp.todo.contract.TodoPresenter
 import com.distillery.android.blueprints.mvp.todo.contract.TodoContract
 import com.distillery.android.domain.ToDoRepository
 import com.distillery.android.domain.models.ToDoModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.flow
-import main.mvpModule
+import com.distillery.android.blueprints.mvp.di.mvpModule
 import org.junit.Rule
 import org.junit.Test
 import org.koin.test.KoinTest
@@ -21,7 +21,7 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import java.util.Date
 
-class PresenterImplementationTest : KoinTest {
+class TodoPresenterTest : KoinTest {
 
     @ExperimentalCoroutinesApi
     @get:Rule
@@ -52,7 +52,7 @@ class PresenterImplementationTest : KoinTest {
             )
         }
         viewContract = mock(TodoContract.View::class.java)
-        val presenter = PresenterImplementation(mock(LifecycleOwner::class.java), viewContract)
+        val presenter = TodoPresenter(viewContract)
         presenter.startFlow()
 
         verify(viewContract, never()).showError(anyInt())

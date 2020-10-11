@@ -29,6 +29,8 @@ data class ToDoModel(
      * Date of the completion.
      */
     val completedAt: Date? = null
-) : Parcelable
+) : Parcelable {
 
-val ToDoModel.isCompleted get() = completedAt != null
+    val isCompleted
+        get() = completedAt != null
+}

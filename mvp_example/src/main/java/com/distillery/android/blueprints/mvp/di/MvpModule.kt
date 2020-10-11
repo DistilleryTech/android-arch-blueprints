@@ -1,4 +1,4 @@
-package main
+package com.distillery.android.blueprints.mvp.di
 
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
@@ -8,7 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import main.presenter.PresenterImplementation
+import com.distillery.android.blueprints.mvp.todo.contract.TodoPresenter
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
@@ -19,8 +19,8 @@ val mvpModule = module {
         val errorHandler = get<CoroutineExceptionHandler>()
         CoroutineScope(Dispatchers.IO + job + errorHandler)
     }
-    single<TodoContract.Presenter> { (lifecycleOwner: LifecycleOwner, view: TodoContract.View) ->
-        PresenterImplementation(lifecycleOwner, view)
+    single<TodoContract.Presenter> { (view: TodoContract.View) ->
+        TodoPresenter(view)
     }
     single {
         CoroutineExceptionHandler { _, throwable ->
