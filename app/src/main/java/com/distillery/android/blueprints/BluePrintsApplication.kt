@@ -3,7 +3,7 @@ package com.distillery.android.blueprints
 import android.app.Application
 import com.distillery.android.blueprints.mvi.mviModule
 import com.distillery.android.blueprints.mvvm.todo.utils.mvvmModule
-import main.mvpModule
+import com.distillery.android.blueprints.mvp.di.mvpModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin

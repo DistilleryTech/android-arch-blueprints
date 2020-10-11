@@ -6,7 +6,7 @@ import com.distillery.android.blueprints.databinding.ActivityMainBinding
 import com.distillery.android.blueprints.mvi.MviActivity
 import com.distillery.android.blueprints.mvvm.MvvmActivity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import main.MvpActivity
+import com.distillery.android.blueprints.mvp.MvpActivity
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity() {

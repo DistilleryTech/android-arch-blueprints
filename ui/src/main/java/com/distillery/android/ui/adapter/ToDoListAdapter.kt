@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.distillery.android.domain.models.ToDoModel
 import com.distillery.android.ui.adapter.ToDoListAdapter.ToDoViewHolder
+import com.distillery.android.ui.clicks.setDebounceClickListener
 import com.distillery.android.ui.databinding.ItemTodoBinding
 import com.distillery.android.ui.strikeThrough
 
@@ -14,42 +15,31 @@ class ToDoListAdapter(
     private val onCompleteClickListener: (toDoModel: ToDoModel) -> Unit
 ) : ListAdapter<ToDoModel, ToDoViewHolder>(ToDoListDiffCallback()) {
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoViewHolder {
+        return ToDoViewHolder(ItemTodoBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false))
+    }
+
+    override fun onBindViewHolder(holder: ToDoViewHolder, position: Int) {
+        holder.bind(getItem(position))
+    }
+
     inner class ToDoViewHolder(private val binding: ItemTodoBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(toDoModel: ToDoModel) {
             binding.apply {
                 titleTextView.text = toDoModel.title
                 descriptionTextView.text = toDoModel.description
-                deleteButton.setOnClickListener {
+                completedCheckBox.isChecked = toDoModel.isCompleted
+                completedCheckBox.isEnabled = !toDoModel.isCompleted
+                titleTextView.strikeThrough(show = toDoModel.isCompleted)
+                descriptionTextView.strikeThrough(show = toDoModel.isCompleted)
+                deleteButton.setDebounceClickListener {
                     onDeleteClickListener(toDoModel)
                 }
-                completedCheckBox.isChecked = toDoModel.completedAt != null
-                completedCheckBox.setOnClickListener {
-                    if (completedCheckBox.isChecked) {
-                        completedCheckBox.isChecked = false
-                        onCompleteClickListener(toDoModel)
-                    } else {
-                        completedCheckBox.isChecked = true
-                    }
-                }
-                if (toDoModel.completedAt != null) {
-                    titleTextView.strikeThrough()
-                    descriptionTextView.strikeThrough()
+                completedCheckBox.setDebounceClickListener {
+                    onCompleteClickListener(toDoModel)
                 }
             }
         }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoViewHolder {
-        return ToDoViewHolder(
-                ItemTodoBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent,
-                        false
-                )
-        )
-    }
-
-    override fun onBindViewHolder(holder: ToDoViewHolder, position: Int) {
-        holder.bind(getItem(position))
     }
 }
