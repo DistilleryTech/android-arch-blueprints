@@ -11,7 +11,6 @@ import com.distillery.android.mvp_example.R
 import com.distillery.android.ui.adapter.ToDoListAdapter
 import com.distillery.android.ui.databinding.FragmentTodoBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.InternalCoroutinesApi
 import org.koin.android.ext.android.get
 import org.koin.core.parameter.parametersOf
 
@@ -33,13 +32,11 @@ class TodoFragment : Fragment(), TodoContract.View {
         return binding.root
     }
 
-    @InternalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initPendingAndDoneRecyclerViews()
     }
 
-    @InternalCoroutinesApi
     private fun initPendingAndDoneRecyclerViews() {
         binding.todoList.apply {
             layoutManager = LinearLayoutManager(this@TodoFragment.context)
