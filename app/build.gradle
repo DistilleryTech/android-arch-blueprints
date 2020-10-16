@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply from: 'config.gradle'
 
+def compose_version = '1.0.0-alpha02'
+
 android {
     compileSdkVersion versions.platform.compileSdk
 
@@ -41,13 +43,21 @@ android {
         targetCompatibility versions.platform.java
     }
     kotlinOptions {
-        jvmTarget = versions.platform.java
+        jvmTarget = '1.8'
+        useIR = true
+    }
+    buildFeatures {
+        compose true
     }
     testOptions {
         unitTests {
             includeAndroidResources = true
         }
         animationsDisabled = true
+    }
+    composeOptions {
+        kotlinCompilerVersion '1.4.0'
+        kotlinCompilerExtensionVersion "$compose_version"
     }
 }
 
@@ -62,6 +72,8 @@ dependencies {
     implementation project(path: ':mvp_example')
     implementation project(path: ':mvvm')
     implementation project(path: ':mvvm_example')
+
+    implementation project(path: ':ui-compose')
 
     // Platform libraries
     implementation libraries.platform.kotlinStdLib
@@ -78,6 +90,8 @@ dependencies {
     implementation libraries.android.supportAppCompat
     implementation libraries.android.supportConstraintLayout
 
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+
     // Unit tests
     testImplementation libraries.test.junit
 
@@ -85,4 +99,7 @@ dependencies {
     implementation libraries.koin.android
     implementation libraries.koin.viewModel
     testImplementation libraries.koin.test
+}
+repositories {
+    maven { url 'https://jitpack.io' }
 }

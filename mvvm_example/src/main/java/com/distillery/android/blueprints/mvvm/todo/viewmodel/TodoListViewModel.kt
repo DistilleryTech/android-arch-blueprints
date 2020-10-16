@@ -1,34 +1,29 @@
 package com.distillery.android.blueprints.mvvm.todo.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
-import com.distillery.android.blueprints.mvvm.todo.utils.AppErrorHandler
-import com.distillery.android.blueprints.mvvm.todo.utils.EventType
-import com.distillery.android.blueprints.mvvm.todo.utils.SingleLiveEvent
-import com.distillery.android.blueprints.mvvm.todo.utils.Trigger
-import com.distillery.android.blueprints.mvvm.todo.utils.trigger
+import androidx.lifecycle.*
+import com.distillery.android.blueprints.mvvm.todo.utils.*
 import com.distillery.android.domain.ToDoRepository
 import com.distillery.android.domain.models.ToDoModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 class TodoListViewModel(
-    private val toDoRepository: ToDoRepository,
-    private val errorHandler: AppErrorHandler
+        private val toDoRepository: ToDoRepository,
+        private val errorHandler: AppErrorHandler
 ) : ViewModel() {
 
     private val refreshLiveData = MutableLiveData<Trigger>()
 
+    private val _title: MutableLiveData<String> = MutableLiveData("")
+    val title: LiveData<String> = _title
+
+    private val _description = MutableLiveData("")
+    val description: LiveData<String> = _description
+
     private val allTodoListLiveData = refreshLiveData.switchMap {
         toDoRepository.fetchToDos()
-            .catch { error: Throwable -> println(error) }
-            .asLiveData(viewModelScope.coroutineContext)
+                .catch { error: Throwable -> println(error) }
+                .asLiveData(viewModelScope.coroutineContext)
     }
 
     val todoListLiveData = allTodoListLiveData.map {
@@ -37,6 +32,18 @@ class TodoListViewModel(
 
     val completedTodoListLiveData = allTodoListLiveData.map {
         it.filter { item -> item.completedAt != null }
+    }
+
+    val totalTodoListLiveData: LiveData<ArrayList<ToDoModel?>> = allTodoListLiveData.map {
+        val nonCompleted = it.filter { item -> item.completedAt == null }
+        val completed = it.filter { item -> item.completedAt != null }
+        val arrayList = ArrayList<ToDoModel?>()
+        arrayList.addAll(nonCompleted)
+        if (completed.isNotEmpty()) {
+            arrayList.add(null)
+            arrayList.addAll(completed)
+        }
+        arrayList
     }
 
     private val _snackBarMessageLiveData = SingleLiveEvent<EventType>()
@@ -88,7 +95,27 @@ class TodoListViewModel(
         }
     }
 
+    fun addTodo() {
+        viewModelScope.launch {
+            _snackBarMessageLiveData.value = errorHandler {
+                val todoTitle = _title.value ?: throw UnsupportedOperationException("title empty")
+                val todoDescription =
+                        _description.value ?: throw UnsupportedOperationException("Description empty")
+                toDoRepository.addToDo(todoTitle, todoDescription)
+            } ?: EventType.ADD
+        }
+    }
+
     override fun onCleared() {
         connectionStatusLiveData.removeObserver(connectionStatusObserver)
     }
+
+    fun onAddTitleChange(updatedTitle: String) {
+        _title.value = updatedTitle
+    }
+
+    fun onDescriptionChange(updatedTitle: String) {
+        _description.value = updatedTitle
+    }
+
 }
